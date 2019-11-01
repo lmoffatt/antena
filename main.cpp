@@ -13,6 +13,12 @@ typedef p<u<ps,1>> ps_u;
 typedef p<u<V,1>> V_u;
 typedef p<u<GHz,1>> GHz_u;
 
+constexpr const auto GHz_f=v(1E9,p_t<u<GHz,-1>,u<s,-1>>{});
+constexpr const auto ps_f=v(1E-12,p_t<u<s,1>,u<ps,-1>>{});
+
+constexpr const auto Gsad=v(1,GHz_u{});
+//using r=typename p_t<u<GHz,-1>,u<s,-1>>::uds;
+
 
 
 struct delay
@@ -60,9 +66,6 @@ struct phase{using T=double; using unit=dimension_less; constexpr static auto cl
 
 struct tau{using T=double; using unit=ps_u; constexpr static auto className=my_static_string("tau");};
 
-
-constexpr const auto GHz_f=v(1E9,p<u<GHz,-1>,u<s,-1>>{});
-constexpr const auto ps_f=v(1E-12,p<u<s,1>,u<ps,-1>>{});
 
 
 template<class D> struct Distribution_of{constexpr static auto className=D::className+my_static_string("_Distribution");};
@@ -137,6 +140,7 @@ int main()
                  auto A0_, auto f0_, auto ph0_, auto tau0_,
                  auto A1_, auto f1_, auto ph1_, auto tau1_ )
               {
+
 
                     return baseline_+(drift_*t)+
                        A0_*exp(-t/tau0_)*cos(2*PI*f0_*GHz_f*t*ps_f+ph0_)+
