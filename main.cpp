@@ -87,24 +87,24 @@ int main()
       x_i(stddev<baseline>{},v(1e-6,V_u{})),
       x_i(mean<drift>{},v(0.0,V_u{}/ps_u{})),
       x_i(stddev<drift>{},v(1e-7,V_u{}/ps_u{})),
-      x_i(mean<Log10_t<stddev<signal>>>{},logv<double,V_u>(-6.0,{1,V_u{}})),
-      x_i(stddev<Log10_t<stddev<signal>>>{},logv<double>(1.0)),
-      x_i(mean<ind<Log10_t<Amplitude>,0>>{},logv<double,V_u>(-5.0,{1,V_u{}})),
-      x_i(stddev<ind<Log10_t<Amplitude>,0>>{},logv<double>(1.0)),
-      x_i(mean<ind<Log10_t<Frecuency>,0>>{},logv<double,GHz_u>(std::log10(9),{1,GHz_u{}})),
-      x_i(stddev<ind<Log10_t<Frecuency>,0>>{},logv<double>(0.2)),
+      x_i(mean<Log10_t<stddev<signal>>>{},logv(-6.0,V_u{})),
+      x_i(stddev<Log10_t<stddev<signal>>>{},v(1.0)),
+      x_i(mean<ind<Log10_t<Amplitude>,0>>{},logv(-5.0,V_u{})),
+      x_i(stddev<ind<Log10_t<Amplitude>,0>>{},v(1.0)),
+      x_i(mean<ind<Log10_t<Frecuency>,0>>{},logv(std::log10(9),GHz_u{})),
+      x_i(stddev<ind<Log10_t<Frecuency>,0>>{},v(0.2)),
       x_i(mean<ind<phase,0>>{},v(PI/4)),
       x_i(stddev<ind<phase,0>>{},v(PI/4)),
-      x_i(mean<ind<Log10_t<tau>,0>>{},logv<double,ps_u>(std::log10(1000),{1,ps_u{}})),
-      x_i(stddev<ind<Log10_t<tau>,0>>{},logv<double>(1)),
-      x_i(mean<ind<Log10_t<Amplitude>,1>>{},logv<double,V_u>(-5.0,{1,V_u{}})),
-      x_i(stddev<ind<Log10_t<Amplitude>,1>>{},logv<double>(1.0)),
-      x_i(mean<ind<Log10_t<Frecuency>,1>>{},logv<double,GHz_u>(std::log10(9),{1,GHz_u{}})),
-      x_i(stddev<ind<Log10_t<Frecuency>,1>>{},logv<double>(0.2)),
+      x_i(mean<ind<Log10_t<tau>,0>>{},logv(std::log10(1000),ps_u{})),
+      x_i(stddev<ind<Log10_t<tau>,0>>{},v(1.0)),
+      x_i(mean<ind<Log10_t<Amplitude>,1>>{},logv(-5.0,V_u{})),
+      x_i(stddev<ind<Log10_t<Amplitude>,1>>{},v(1.0)),
+      x_i(mean<ind<Log10_t<Frecuency>,1>>{},logv(std::log10(9),GHz_u{})),
+      x_i(stddev<ind<Log10_t<Frecuency>,1>>{},v(0.2)),
       x_i(mean<ind<phase,1>>{},v(PI/4)),
       x_i(stddev<ind<phase,1>>{},v(PI/4)),
-      x_i(mean<ind<Log10_t<tau>,1>>{},logv<double,ps_u>(std::log10(1000),{1,ps_u{}})),
-      x_i(stddev<ind<Log10_t<tau>,1>>{},logv<double>(1))};
+      x_i(mean<ind<Log10_t<tau>,1>>{},logv(std::log10(1000),ps_u{})),
+      x_i(stddev<ind<Log10_t<tau>,1>>{},v(1.0))};
 
   auto myprior_transf=quimulun{
       F(stddev<signal>{},Log10_rev{},Log10_t<stddev<signal>>{}),
@@ -140,10 +140,18 @@ int main()
                  auto A0_, auto f0_, auto ph0_, auto tau0_,
                  auto A1_, auto f1_, auto ph1_, auto tau1_ )
               {
-
+//                using a=typename decltype(t)::t;
+//                using b=typename decltype(baseline_)::baseline;
+//                using c=typename decltype(drift_)::drift;
+//                using d=typename decltype(A0_)::A0;
+//                using e=typename decltype(tau0_)::tau;
 
                     return baseline_+(drift_*t)+
-                       A0_*exp(-t/tau0_)*cos(2*PI*f0_*GHz_f*t*ps_f+ph0_)+
+                       A0_*exp(
+                                 -t/tau0_
+                                 )*
+                           cos(2*PI*f0_*GHz_f*t*ps_f
+                               +ph0_)+
                        A1_*exp(-t/tau1_)*cos(2*PI*f1_*GHz_f*t*ps_f+ph1_);},
               delay{},baseline{},drift{},
               ind<Amplitude,0>{},ind<Frecuency,0>{},ind<phase,0>{},ind<tau,0>{},
@@ -170,8 +178,11 @@ int main()
   auto data2=data;
   auto s=sample(totalmodel,std::move(data2),mt);
 
-  std::cerr<<s;
+  //std::cerr<<s;
 
+  auto logL=logP(totalmodel,s);
+
+  std::cerr<<logL;
 /*  auto fname2="antena_data_2.txt";
   std::ofstream of(fname2);
   to_DataFrame(of,data);
