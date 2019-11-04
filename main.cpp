@@ -162,8 +162,8 @@ int main()
                            x_i(signal{},vec<delay>{})};
 
   using  data_fields=Cs<delay,signal>;
-  auto fname="antena_data_1.txt";
-  std::ifstream fi(fname);
+  auto fname_a="antena_data_1.txt";
+  std::ifstream fi(fname_a);
   from_DataTable(fi,data);
 
   auto totalmodel=mymodel+myprior_dist+myprior_transf+myprior_values;
@@ -195,30 +195,43 @@ int main()
   //std::cerr << "data \n"<<data <<std::endl;
 
   auto logL=logP(totalmodel,s);
-  auto dlogL=logP(totalmodel,data_sim,dpar);
 
 
 
-  std::cerr<<logL;
-  std::cerr<<dlogL;
-/*  auto fname2="antena_data_2.txt";
-  std::ofstream of(fname2);
-  to_DataFrame(of,data);
-
-  auto data_2=decltype (data){};
-  of.close();
-  std::ifstream if2(fname2);
-  from_DataFrame(if2,data_2);
-
-  auto fname3="antena_data_3.txt";
-  std::ofstream of3(fname3);
-  to_DataTable(of3,data);
-*/
 
 
+  auto qui=totalmodel;
+  auto dlogL=vector_space(logP(qui,data_sim,dpar));
 
-//  std::cerr<<data;
 
+  auto fim=FIM(qui,data,dpar);
+  std::cerr <<"logL"<< logL<<std::endl;
+  std::cerr << "dlogL"<< dlogL<<std::endl;
+  std::cerr<<"FIM "<<fim<<"\n";
+  std::string fname="out.txt";
+  std::ofstream f(fname.c_str());
+  auto dpar_new=decltype (dpar){};
+  auto fim_new=decltype(fim){};
+  auto dlogL_new=decltype(dlogL){};
+  // to_DataFrame(f,s);
+  to_DataFrame(f,dlogL);
+  f.close();
+
+  auto s_new=decltype (s){};
+  std::ifstream fe;
+  fe.open(fname.c_str());
+  if (fe.is_open())
+  {
+    from_DataFrame(fe,dlogL_new);
+    //      from_DataFrame(fe,fim_new);
+    //     from_DataFrame(fe,s_new);
+
+  }
+  std::cerr<<"\ndlogL\n"<<dlogL;
+  std::cerr<<"\n dlogL_new\n"<<dlogL_new;
+
+
+  assert(dlogL==dlogL_new);
 
 
   return 0;
