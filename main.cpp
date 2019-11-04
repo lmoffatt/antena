@@ -55,7 +55,7 @@ struct ind
 
 struct baseline{using T=double; using unit=V_u; constexpr static auto className=my_static_string("baseline");};
 
-struct drift{using T=double; using unit=decltype (V_u{}/ps_u{}); constexpr static auto className=my_static_string("baseline");};
+struct drift{using T=double; using unit=decltype (V_u{}/ps_u{}); constexpr static auto className=my_static_string("drift");};
 
 struct Amplitude{using T=double; using unit=V_u; constexpr static auto className=my_static_string("Amplitude");};
 
@@ -120,7 +120,7 @@ int main()
   };
 
   auto myprior_dist=quimulun{
-      D(baseline{},Normal_Distribution{},mean<baseline>{},stddev<baseline>{}),
+        D(baseline{},Normal_Distribution{},mean<baseline>{},stddev<baseline>{}),
         D(drift{},Normal_Distribution{},mean<drift>{},stddev<drift>{}),
         D(Log10_t<stddev<signal>>{},Normal_Distribution{},mean<Log10_t<stddev<signal>>>{},stddev<Log10_t<stddev<signal>>>{}),
         D(ind<Log10_t<Amplitude>,0>{},Normal_Distribution{},mean<ind<Log10_t<Amplitude>,0>>{},stddev<ind<Log10_t<Amplitude>,0>>{}),
@@ -143,7 +143,7 @@ int main()
 //                using a=typename decltype(t)::t;
 //                using b=typename decltype(baseline_)::baseline;
 //                using c=typename decltype(drift_)::drift;
-//                using d=typename decltype(A0_)::A0;
+ //              using d=typename decltype(A0_)::A0;
 //                using e=typename decltype(tau0_)::tau;
 
                     return baseline_+(drift_*t)+
@@ -158,16 +158,18 @@ int main()
               ind<Amplitude,1>{},ind<Frecuency,1>{},ind<phase,1>{},ind<tau,1>{})
   };
 
-  auto data=vector_space{
-      x_i(delay{}, vec<delay>{}),x_i(signal{},vec<delay>{})};
+  auto data=vector_space{x_i(delay{}, vec<delay>{}),
+                           x_i(signal{},vec<delay>{})};
 
+  using  data_fields=Cs<delay,signal>;
   auto fname="antena_data_1.txt";
   std::ifstream fi(fname);
   from_DataTable(fi,data);
 
   auto totalmodel=mymodel+myprior_dist+myprior_transf+myprior_values;
 
-  auto data_prior=data;
+  auto data_time=data|myselect<Cs<delay>>{};
+
 
   std::random_device rd;
   auto initseed = 0;
@@ -175,14 +177,30 @@ int main()
 
   std::mt19937 mt(initseed);
 
-  auto data2=data;
+  auto data2=data_time;
   auto s=sample(totalmodel,std::move(data2),mt);
 
-  //std::cerr<<s;
+
+  auto par=s|  myselect<typename decltype(myprior_dist)::myIds>{};
+//  using wpar=typename decltype(par)::par;
+
+  auto dpar=Self_Derivative(par);
+  auto data_sim=s| myselect<data_fields>{};
+  //using wdpar=typename decltype(dpar)::dpar;
+
+
+  //std::cerr << "parameters \n"<<par <<std::endl;
+  //std::cerr << "dparameters \n"<<dpar <<std::endl;
+
+  //std::cerr << "data \n"<<data <<std::endl;
 
   auto logL=logP(totalmodel,s);
+  auto dlogL=logP(totalmodel,data_sim,dpar);
+
+
 
   std::cerr<<logL;
+  std::cerr<<dlogL;
 /*  auto fname2="antena_data_2.txt";
   std::ofstream of(fname2);
   to_DataFrame(of,data);
