@@ -4,6 +4,9 @@
 #include <mytypetraits.h>
 #include <qm_tensor_model.h>
 #include <fstream>
+#include <my_tests.h>
+#include <qm_Metropolis_Parallel.h>
+#include <qm_data_frame.h>
 struct ps{constexpr static auto  className=my_static_string("ps");};
 struct V{constexpr static auto  className=my_static_string("V");};
 struct GHz{constexpr static auto  className=my_static_string("GHz");};
@@ -177,43 +180,78 @@ int main()
 
   std::mt19937 mt(initseed);
 
+  auto mtv=v(std::move(mt));
+  std::mt19937 mt2(initseed);
+  auto mtv2=v(std::move(mt2));
+
   auto data2=data_time;
-  auto s=sample(totalmodel,std::move(data2),mt);
 
 
-  auto par=s|  myselect<typename decltype(myprior_dist)::myIds>{};
-//  using wpar=typename decltype(par)::par;
+  auto [par, variables, predictions]=simulate(totalmodel,data,mtv);
+  auto [par2, variables2]=sample(totalmodel,data,mtv2);
 
+  auto logPriorv=logPrior(totalmodel,data,par2,variables2);
+  auto logLikv=logLikelihood(totalmodel,data,par2,variables2);
+
+  std::cerr<<"\nlogPriorv\n"<<logPriorv;
+  std::cerr<<"\nlogPriorv\n"<<logLikv;
   auto dpar=Self_Derivative(par);
-  auto data_sim=s| myselect<data_fields>{};
+  auto dvariables3 =calculate(totalmodel,data,dpar);
+
+  auto dlogPriorv=logPrior(totalmodel,data,dpar,dvariables3);
+  auto dlogLikv=logLikelihood(totalmodel,data,dpar,dvariables3);
+
+  std::cerr<<"\ndlogPriorv\n"<<dlogPriorv;
+  std::cerr<<"\ndlogLikv\n"<<dlogLikv;
+
+  std::cerr<<"\ndvariables\n"<<dvariables3;
+
+
+  //  auto s=sample(totalmodel,std::move(data2),mt);
+
+  //auto par=s |  myselect<typename decltype(myprior_dist)::myIds>{};
+  //using wpar=typename decltype(par)::par;
+
+  //auto data_sim=s| myselect<data_fields>{};
   //using wdpar=typename decltype(dpar)::dpar;
 
 
-  //std::cerr << "parameters \n"<<par <<std::endl;
-  //std::cerr << "dparameters \n"<<dpar <<std::endl;
+//  std::cerr << "parameters \n"<<par <<std::endl;
+//  std::cerr << "parameters 2\n"<<par2 <<std::endl;
+//  std::cerr << "dparameters \n"<<dpar <<std::endl;
 
-  //std::cerr << "data \n"<<data <<std::endl;
+//  std::cerr << "data \n"<<data <<std::endl;
+//  std::cerr << "predictions \n"<<predictions <<std::endl;
 
+/*
   auto logL=logP(totalmodel,s);
+  auto be=std::vector<double>{0,1e-4,3e-4,1e-3,3e-3,1e-2,3e-2,0.1,0.2,0.3,0.5,0.8,1.0};
+  vector_field<vec<beta_ei>,v<double,dimension_less>> betas;
+  auto pbe=betas.begin();
+  for (auto &e:be)
+  {
 
+    insert_at(betas,pbe,{v<double,dimension_less>(std::move(e))});
 
+  }
+//  auto mcmc=parallel_emcee(totalmodel,s,betas,v<std::size_t,dimension_less>(10),initseed,200,std::cerr);
 
+  std::string fname="out.txt";
+  std::ofstream f(fname.c_str());
+  to_DataFrame(f,s);
 
-
-  auto qui=totalmodel;
-  auto dlogL=vector_space(logP(qui,data_sim,dpar));
+/*
+      auto qui=totalmodel;;
+  //auto dlogL=vector_space(logP(qui,data_sim,dpar));
 
 
   auto fim=FIM(qui,data,dpar);
   std::cerr <<"logL"<< logL<<std::endl;
   std::cerr << "dlogL"<< dlogL<<std::endl;
-  std::cerr<<"FIM "<<fim<<"\n";
-  std::string fname="out.txt";
-  std::ofstream f(fname.c_str());
+  std::cerr<<"\n\nFIM\n "<<fim<<"\n";
   auto dpar_new=decltype (dpar){};
   auto fim_new=decltype(fim){};
   auto dlogL_new=decltype(dlogL){};
-  // to_DataFrame(f,s);
   to_DataFrame(f,dlogL);
   f.close();
 
@@ -231,8 +269,17 @@ int main()
   std::cerr<<"\n dlogL_new\n"<<dlogL_new;
 
 
+
+
   assert(dlogL==dlogL_new);
 
 
+  assert(test_print_read([](auto& os, auto & x)->auto&{return to_DataFrame(os,x);},
+                         [](auto& is, auto& x)->auto&{return from_DataFrame(is,x);},
+                         dlogL,"output2"));
+
+  assert(test_output_extraction_operators(dlogL,"dlogL.txt"));
+
+*/
   return 0;
 }
