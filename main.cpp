@@ -187,8 +187,8 @@ int main()
   auto data2=data_time;
 
 
-  auto [par, variables, predictions]=simulate(totalmodel,data,mtv);
-  auto [par2, variables2]=sample(totalmodel,data,mtv2);
+  auto [par, variables, predictions]=simulate(totalmodel,mtv,data);
+  auto [par2, variables2]=sample(totalmodel,mtv2,data);
 
   auto logPriorv=logPrior(totalmodel,data,par2,variables2);
   auto logLikv=logLikelihood(totalmodel,data,par2,variables2);
@@ -199,60 +199,62 @@ int main()
   auto dvariables3 =calculate(totalmodel,data,dpar);
 
   auto dlogPriorv=logPrior(totalmodel,data,dpar,dvariables3);
-  auto dlogLikv=logLikelihood(totalmodel,data,dpar,dvariables3);
+  auto dlogL=logLikelihood(totalmodel,data,dpar,dvariables3);
+
+  auto fimPriorv=fimPrior(totalmodel,data,dpar,dvariables3);
+  auto fimLikv=fimLikelihood(totalmodel,data,dpar,dvariables3);
+
 
   std::cerr<<"\ndlogPriorv\n"<<dlogPriorv;
-  std::cerr<<"\ndlogLikv\n"<<dlogLikv;
+  std::cerr<<"\ndlogLikv\n"<<dlogL;
 
   std::cerr<<"\ndvariables\n"<<dvariables3;
 
 
-  //  auto s=sample(totalmodel,std::move(data2),mt);
-
-  //auto par=s |  myselect<typename decltype(myprior_dist)::myIds>{};
-  //using wpar=typename decltype(par)::par;
-
-  //auto data_sim=s| myselect<data_fields>{};
-  //using wdpar=typename decltype(dpar)::dpar;
+    //auto s=sample(totalmodel,std::move(data2),mt);
 
 
-//  std::cerr << "parameters \n"<<par <<std::endl;
-//  std::cerr << "parameters 2\n"<<par2 <<std::endl;
-//  std::cerr << "dparameters \n"<<dpar <<std::endl;
+ // auto data_sim=s| myselect<data_fields>{};
 
-//  std::cerr << "data \n"<<data <<std::endl;
-//  std::cerr << "predictions \n"<<predictions <<std::endl;
 
-/*
-  auto logL=logP(totalmodel,s);
+  std::cerr << "parameters \n"<<par <<std::endl;
+  std::cerr << "parameters 2\n"<<par2 <<std::endl;
+  std::cerr << "dparameters \n"<<dpar <<std::endl;
+
+  std::cerr << "data \n"<<data <<std::endl;
+  std::cerr << "predictions \n"<<predictions <<std::endl;
+
+
+ // auto logL=logP(totalmodel,s);
   auto be=std::vector<double>{0,1e-4,3e-4,1e-3,3e-3,1e-2,3e-2,0.1,0.2,0.3,0.5,0.8,1.0};
   vector_field<vec<beta_ei>,v<double,dimension_less>> betas;
   auto pbe=betas.begin();
   for (auto &e:be)
   {
-
     insert_at(betas,pbe,{v<double,dimension_less>(std::move(e))});
+    ++pbe[beta_ei{}]();
 
   }
-//  auto mcmc=parallel_emcee(totalmodel,s,betas,v<std::size_t,dimension_less>(10),initseed,200,std::cerr);
+
+
+  auto mcmc=parallel_emcee(totalmodel,data,betas,v<std::size_t,dimension_less>(10),initseed,200,std::cerr);
 
   std::string fname="out.txt";
   std::ofstream f(fname.c_str());
+  auto s=dpar;
   to_DataFrame(f,s);
 
-/*
+
       auto qui=totalmodel;;
   //auto dlogL=vector_space(logP(qui,data_sim,dpar));
 
 
-  auto fim=FIM(qui,data,dpar);
-  std::cerr <<"logL"<< logL<<std::endl;
-  std::cerr << "dlogL"<< dlogL<<std::endl;
-  std::cerr<<"\n\nFIM\n "<<fim<<"\n";
+  std::cerr<<"\n\nFIM\n "<<fimLikv<<"\n";
   auto dpar_new=decltype (dpar){};
-  auto fim_new=decltype(fim){};
-  auto dlogL_new=decltype(dlogL){};
-  to_DataFrame(f,dlogL);
+  auto fim_new=decltype(fimLikv){};
+  auto dlogLve=vector_space(std::move(dlogL));
+  auto dlogL_new=decltype(dlogLve){};
+  to_DataFrame(f,dlogLve);
   f.close();
 
   auto s_new=decltype (s){};
@@ -271,15 +273,15 @@ int main()
 
 
 
-  assert(dlogL==dlogL_new);
+//  assert(dlogLve==dlogL_new);
 
 
   assert(test_print_read([](auto& os, auto & x)->auto&{return to_DataFrame(os,x);},
                          [](auto& is, auto& x)->auto&{return from_DataFrame(is,x);},
-                         dlogL,"output2"));
+                         fimLikv,"output2"));
 
-  assert(test_output_extraction_operators(dlogL,"dlogL.txt"));
+  assert(test_output_extraction_operators(fimLikv,"fimLikv.txt"));
 
-*/
+
   return 0;
 }
