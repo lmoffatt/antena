@@ -167,7 +167,7 @@ int main()
   using  data_fields=Cs<delay,signal>;
   auto fname_a="antena_data_1.txt";
   std::ifstream fi(fname_a);
-  from_DataTable(fi,data);
+  from_DataFrame(fi,data);
 
   auto totalmodel=mymodel+myprior_dist+myprior_transf+myprior_values;
 
@@ -205,24 +205,24 @@ int main()
   auto fimLikv=fimLikelihood(totalmodel,data,dpar,dvariables3);
 
 
-  std::cerr<<"\ndlogPriorv\n"<<dlogPriorv;
-  std::cerr<<"\ndlogLikv\n"<<dlogL;
+//  std::cerr<<"\ndlogPriorv\n"<<dlogPriorv;
+//  std::cerr<<"\ndlogLikv\n"<<dlogL;
 
-  std::cerr<<"\ndvariables\n"<<dvariables3;
-
-
-    //auto s=sample(totalmodel,std::move(data2),mt);
+//  std::cerr<<"\ndvariables\n"<<dvariables3;
 
 
- // auto data_sim=s| myselect<data_fields>{};
+//    //auto s=sample(totalmodel,std::move(data2),mt);
 
 
-  std::cerr << "parameters \n"<<par <<std::endl;
-  std::cerr << "parameters 2\n"<<par2 <<std::endl;
-  std::cerr << "dparameters \n"<<dpar <<std::endl;
+// // auto data_sim=s| myselect<data_fields>{};
 
-  std::cerr << "data \n"<<data <<std::endl;
-  std::cerr << "predictions \n"<<predictions <<std::endl;
+
+//  std::cerr << "parameters \n"<<par <<std::endl;
+//  std::cerr << "parameters 2\n"<<par2 <<std::endl;
+//  std::cerr << "dparameters \n"<<dpar <<std::endl;
+
+//  std::cerr << "data \n"<<data <<std::endl;
+//  std::cerr << "predictions \n"<<predictions <<std::endl;
 
 
  // auto logL=logP(totalmodel,s);
@@ -231,25 +231,31 @@ int main()
   auto pbe=betas.begin();
   for (auto &e:be)
   {
-    insert_at(betas,pbe,{v<double,dimension_less>(std::move(e))});
+    insert_at(betas,pbe,std::move(e));
     ++pbe[beta_ei{}]();
 
   }
 
+  std::string fname_emcee="emcee";
+  //std::ofstream f_emcee(fname_emcee.c_str());
 
-  auto mcmc=parallel_emcee(totalmodel,data,betas,v<std::size_t,dimension_less>(10),initseed,200,std::cerr);
+  auto decimate_factor=std::vector<std::size_t>{1ul,1ul,1ul,500ul,500};
 
+  auto mcmc=parallel_emcee(totalmodel,data,betas,v<std::size_t,dimension_less>(10),initseed,5000,decimate_factor,fname_emcee);
+
+// f_emcee.close();
   std::string fname="out.txt";
   std::ofstream f(fname.c_str());
   auto s=dpar;
-  to_DataFrame(f,s);
+ // to_DataFrame(f,variables+data);
+ // to_DataFrame(f,s);
 
 
       auto qui=totalmodel;;
   //auto dlogL=vector_space(logP(qui,data_sim,dpar));
 
 
-  std::cerr<<"\n\nFIM\n "<<fimLikv<<"\n";
+//  std::cerr<<"\n\nFIM\n "<<fimLikv<<"\n";
   auto dpar_new=decltype (dpar){};
   auto fim_new=decltype(fimLikv){};
   auto dlogLve=vector_space(std::move(dlogL));
@@ -262,13 +268,13 @@ int main()
   fe.open(fname.c_str());
   if (fe.is_open())
   {
-    from_DataFrame(fe,dlogL_new);
+    //from_DataFrame(fe,dlogL_new);
     //      from_DataFrame(fe,fim_new);
     //     from_DataFrame(fe,s_new);
 
   }
-  std::cerr<<"\ndlogL\n"<<dlogL;
-  std::cerr<<"\n dlogL_new\n"<<dlogL_new;
+//  std::cerr<<"\ndlogL\n"<<dlogL;
+//  std::cerr<<"\n dlogL_new\n"<<dlogL_new;
 
 
 
@@ -278,9 +284,9 @@ int main()
 
   assert(test_print_read([](auto& os, auto & x)->auto&{return to_DataFrame(os,x);},
                          [](auto& is, auto& x)->auto&{return from_DataFrame(is,x);},
-                         fimLikv,"output2"));
+                         variables+data,"output2"));
 
-  assert(test_output_extraction_operators(fimLikv,"fimLikv.txt"));
+  //assert(test_output_extraction_operators(fimLikv,"fimLikv.txt"));
 
 
   return 0;
