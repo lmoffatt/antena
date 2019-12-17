@@ -711,7 +711,7 @@ int main()
   std::string fname_emcee="emcee";
   //std::ofstream f_emcee(fname_emcee.c_str());
 
-  auto decimate_factor=std::vector<std::size_t>{10ul,10ul,100ul,5000ul,500};
+  auto decimate_factor=std::vector<std::size_t>{1ul,1ul,10ul,50ul,100};
   auto decimate_factor_1=std::vector<std::size_t>{1ul,1ul,1ul,1ul,1};
 
   //  auto mcmc=parallel_emcee(totalmodel_41,data_42,betas,v<std::size_t,dimension_less>(100),initseed,100000,decimate_factor,fname_emcee);
@@ -758,12 +758,6 @@ int main()
 
   //  assert(dlogLve==dlogL_new);
 
-
-  assert(test_print_read([](auto& os, auto & x)->auto&{return to_DataFrame(os,x);},
-      [](auto& is, auto& x)->auto&{return from_DataFrame(is,x);},
-      variables+data,"output2"));
-
-  //assert(test_output_extraction_operators(fimLikv,"fimLikv.txt"));
 
 
   return 0;
