@@ -379,216 +379,11 @@ template<std::size_t N>
 auto totalmodel_41_(){ return totalmodel_index(std::index_sequence<N>{},std::index_sequence<0,1,2>{},std::index_sequence<>{})+my_common_prior_values();}
 
 
-int main()
+int main(int /*argc*/, char **argv)
 {
-  auto myprior_values=vector_space{
-      x_i(mean<baseline>{},v(0.0,V_u{})),
-      x_i(stddev<baseline>{},v(1e-6,V_u{})),
-      x_i(mean<drift>{},v(0.0,V_u{}/ps_u{})),
-      x_i(stddev<drift>{},v(1e-7,V_u{}/ps_u{})),
-      x_i(mean<Log10_t<stddev<signal>>>{},logv(-6.0,V_u{})),
-      x_i(stddev<Log10_t<stddev<signal>>>{},v(1.0)),
-
-      x_i(mean<ind<Log10_t<Amplitude>,0>>{},logv(-5.0,V_u{})),
-      x_i(stddev<ind<Log10_t<Amplitude>,0>>{},v(1.0)),
-      x_i(mean<ind<Log10_t<Frecuency>,0>>{},logv(std::log10(9),GHz_u{})),
-      x_i(stddev<ind<Log10_t<Frecuency>,0>>{},v(0.2)),
-      x_i(mean<ind<phase,0>>{},v(PI/4)),
-      x_i(stddev<ind<phase,0>>{},v(PI/4)),
-      x_i(mean<ind<Log10_t<tau>,0>>{},logv(std::log10(1000),ps_u{})),
-      x_i(stddev<ind<Log10_t<tau>,0>>{},v(1.0)),
-
-      x_i(mean<ind<Log10_t<Amplitude>,1>>{},logv(-5.0,V_u{})),
-      x_i(stddev<ind<Log10_t<Amplitude>,1>>{},v(1.0)),
-      x_i(mean<ind<Log10_t<Frecuency>,1>>{},logv(std::log10(9),GHz_u{})),
-      x_i(stddev<ind<Log10_t<Frecuency>,1>>{},v(0.2)),
-      x_i(mean<ind<phase,1>>{},v(PI/4)),
-      x_i(stddev<ind<phase,1>>{},v(PI/4)),
-      x_i(mean<ind<Log10_t<tau>,1>>{},logv(std::log10(1000),ps_u{})),
-      x_i(stddev<ind<Log10_t<tau>,1>>{},v(1.0))
-
-
-  };
-
-      auto myprior_values_3=vector_space{
-          x_i(mean<baseline>{},v(0.0,V_u{})),
-          x_i(stddev<baseline>{},v(1e-6,V_u{})),
-          x_i(mean<drift>{},v(0.0,V_u{}/ps_u{})),
-          x_i(stddev<drift>{},v(1e-7,V_u{}/ps_u{})),
-          x_i(mean<Log10_t<stddev<signal>>>{},logv(-6.0,V_u{})),
-          x_i(stddev<Log10_t<stddev<signal>>>{},v(1.0)),
-
-          x_i(mean<Log10_t<Amplitude>>{},logv(-5.0,V_u{})),
-          x_i(stddev<Log10_t<Amplitude>>{},v(1.0)),
-          x_i(mean<Log10_t<Frecuency>>{},logv(std::log10(9),GHz_u{})),
-          x_i(mean<Log10_t<ind<Frecuency,0>>>{},logv(std::log10(0.0001),GHz_u{})),
-          x_i(stddev<Log10_t<Frecuency>>{},v(1.0)),
-          x_i(mean<phase>{},v(PI/4)),
-          x_i(stddev<phase>{},v(PI/4)),
-          x_i(mean<Log10_t<tau>>{},logv(std::log10(1000),ps_u{})),
-          x_i(stddev<Log10_t<tau>>{},v(1.0)),
-
-
-
-          };
-
-  auto myprior_transf=quimulun{
-      F(stddev<signal>{},Log10_rev{},Log10_t<stddev<signal>>{}),
-
-      F(ind<Amplitude,0>{},Log10_rev{},ind<Log10_t<Amplitude>,0>{}),
-      F(ind<Frecuency,0>{},Log10_rev{},ind<Log10_t<Frecuency>,0>{}),
-      F(ind<tau,0>{},Log10_rev{},ind<Log10_t<tau>,0>{}),
-
-      F(ind<Amplitude,1>{},Log10_rev{},ind<Log10_t<Amplitude>,1>{}),
-      F(ind<Frecuency,1>{},Log10_rev{},ind<Log10_t<Frecuency>,1>{}),
-      F(ind<tau,1>{},Log10_rev{},ind<Log10_t<tau>,1>{})
-
-  };
-
-  auto myprior_transf_3=quimulun{
-      F(stddev<signal>{},Log10_rev{},Log10_t<stddev<signal>>{}),
-
-      F(ind<Amplitude,0>{},Log10_rev{},ind<Log10_t<Amplitude>,0>{}),
-      F(ind<Frecuency,0>{},Log10_rev{},ind<Log10_t<Frecuency>,0>{}),
-      F(ind<tau,0>{},Log10_rev{},ind<Log10_t<tau>,0>{}),
-
-      F(ind<Amplitude,1>{},Log10_rev{},ind<Log10_t<Amplitude>,1>{}),
-      F(ind<Frecuency,1>{},Log10_rev{},ind<Log10_t<Frecuency>,1>{}),
-      F(ind<tau,1>{},Log10_rev{},ind<Log10_t<tau>,1>{}),
-
-      F(ind<Amplitude,2>{},Log10_rev{},ind<Log10_t<Amplitude>,1>{}),
-      F(ind<Frecuency,2>{},Log10_rev{},ind<Log10_t<Frecuency>,1>{}),
-      F(ind<tau,2>{},Log10_rev{},ind<Log10_t<tau>,1>{})
-
-  };
-
-      auto myprior_dist=quimulun{
-          D(baseline{},Normal_Distribution{},mean<baseline>{},stddev<baseline>{}),
-          D(drift{},Normal_Distribution{},mean<drift>{},stddev<drift>{}),
-          D(Log10_t<stddev<signal>>{},Normal_Distribution{},mean<Log10_t<stddev<signal>>>{},stddev<Log10_t<stddev<signal>>>{}),
-
-          D(ind<Log10_t<Amplitude>,0>{},Normal_Distribution{},mean<ind<Log10_t<Amplitude>,0>>{},stddev<ind<Log10_t<Amplitude>,0>>{}),
-          D(ind<Log10_t<Frecuency>,0>{},Normal_Distribution{},mean<ind<Log10_t<Frecuency>,0>>{},stddev<ind<Log10_t<Frecuency>,0>>{}),
-          D(ind<phase,0>{},Normal_Distribution{},mean<ind<phase,0>>{},stddev<ind<phase,0>>{}),
-          D(ind<Log10_t<tau>,0>{},Normal_Distribution{},mean<ind<Log10_t<tau>,0>>{},stddev<ind<Log10_t<tau>,0>>{}),
-
-          D(ind<Log10_t<Amplitude>,1>{},Normal_Distribution{},mean<ind<Log10_t<Amplitude>,1>>{},stddev<ind<Log10_t<Amplitude>,1>>{}),
-          D(ind<Log10_t<Frecuency>,1>{},Normal_Distribution{},mean<ind<Log10_t<Frecuency>,1>>{},stddev<ind<Log10_t<Frecuency>,1>>{}),
-
-          D(ind<phase,1>{},Normal_Distribution{},mean<ind<phase,1>>{},stddev<ind<phase,1>>{}),
-          D(ind<Log10_t<tau>,1>{},Normal_Distribution{},mean<ind<Log10_t<tau>,1>>{},stddev<ind<Log10_t<tau>,1>>{})};
-
-
-
-      auto myprior_dist_3=quimulun{
-          D(baseline{},Normal_Distribution{},mean<baseline>{},stddev<baseline>{}),
-          D(drift{},Normal_Distribution{},mean<drift>{},stddev<drift>{}),
-          D(Log10_t<stddev<signal>>{},Normal_Distribution{},mean<Log10_t<stddev<signal>>>{},stddev<Log10_t<stddev<signal>>>{}),
-
-          D(ind<Log10_t<Amplitude>,0>{},Normal_Distribution{},mean<Log10_t<Amplitude>>{},stddev<Log10_t<Amplitude>>{}),
-          D(ind<Log10_t<Frecuency>,0>{},Normal_Distribution{},mean<Log10_t<ind<Frecuency,0>>>{},stddev<Log10_t<Frecuency>>{}),
-          D(ind<phase,0>{},Normal_Distribution{},mean<phase>{},stddev<phase>{}),
-          D(ind<Log10_t<tau>,0>{},Normal_Distribution{},mean<Log10_t<tau>>{},stddev<Log10_t<tau>>{}),
-
-          D(ind<Log10_t<Amplitude>,1>{},Normal_Distribution{},mean<Log10_t<Amplitude>>{},stddev<Log10_t<Amplitude>>{}),
-          D(ind<Log10_t<Frecuency>,1>{},Normal_Distribution{},mean<Log10_t<Frecuency>>{},stddev<Log10_t<Frecuency>>{}),
-          D(ind<phase,1>{},Normal_Distribution{},mean<phase>{},stddev<phase>{}),
-          D(ind<Log10_t<tau>,1>{},Normal_Distribution{},mean<Log10_t<tau>>{},stddev<Log10_t<tau>>{}),
-
-          D(ind<Log10_t<Amplitude>,2>{},Normal_Distribution{},mean<Log10_t<Amplitude>>{},stddev<Log10_t<Amplitude>>{}),
-          D(ind<Log10_t<Frecuency>,2>{},Normal_Distribution{},mean<Log10_t<Frecuency>>{},stddev<Log10_t<Frecuency>>{}),
-          D(ind<phase,2>{},Normal_Distribution{},mean<phase>{},stddev<phase>{}),
-          D(ind<Log10_t<tau>,2>{},Normal_Distribution{},mean<Log10_t<tau>>{},stddev<Log10_t<tau>>{}),
-          };
-
-  auto myprior_dist_5=quimulun{
-      D(baseline{},Normal_Distribution{},mean<baseline>{},stddev<baseline>{}),
-      D(drift{},Normal_Distribution{},mean<drift>{},stddev<drift>{}),
-      D(Log10_t<stddev<signal>>{},Normal_Distribution{},mean<Log10_t<stddev<signal>>>{},stddev<Log10_t<stddev<signal>>>{}),
-
-      D(ind<Log10_t<Amplitude>,0>{},Normal_Distribution{},mean<ind<Log10_t<Amplitude>,0>>{},stddev<ind<Log10_t<Amplitude>,0>>{}),
-      D(ind<Log10_t<Frecuency>,0>{},Normal_Distribution{},mean<ind<Log10_t<Frecuency>,0>>{},stddev<ind<Log10_t<Frecuency>,0>>{}),
-      D(ind<phase,0>{},Normal_Distribution{},mean<ind<phase,0>>{},stddev<ind<phase,0>>{}),
-      D(ind<Log10_t<tau>,0>{},Normal_Distribution{},mean<ind<Log10_t<tau>,0>>{},stddev<ind<Log10_t<tau>,0>>{}),
-
-      D(ind<Log10_t<Frecuency>,1>{},Normal_Distribution{},mean<Log10_t<Frecuency>>{},stddev<ind<Log10_t<Frecuency>,1>>{}),
-      D(ind<Log10_t<Amplitude>,1>{},Normal_Distribution{},mean<Log10_t<Amplitude>>{},stddev<ind<Log10_t<Amplitude>,1>>{}),
-      D(ind<phase,1>{},Normal_Distribution{},mean<phase>{},stddev<ind<phase>>{}),
-      D(ind<Log10_t<tau>,1>{},Normal_Distribution{},mean<Log10_t<tau>>{},stddev<ind<Log10_t<tau>,1>>{}),
-
-      D(ind<Log10_t<Amplitude>,2>{},Normal_Distribution{},mean<ind<Log10_t<Amplitude>,1>>{},stddev<ind<Log10_t<Amplitude>,1>>{}),
-      D(ind<Log10_t<Frecuency>,2>{},Normal_Distribution{},mean<ind<Log10_t<Frecuency>,1>>{},stddev<ind<Log10_t<Frecuency>,1>>{}),
-      D(ind<phase,2>{},Normal_Distribution{},mean<ind<phase,1>>{},stddev<ind<phase,1>>{}),
-      D(ind<Log10_t<tau>,2>{},Normal_Distribution{},mean<ind<Log10_t<tau>,1>>{},stddev<ind<Log10_t<tau>,1>>{})};
-
-
-
-
-  auto mymodel=
-      quimulun{
-          D(signal{},Normal_Distribution{},mean<signal>{},stddev<signal>{}),
-          F(mean<signal>{},
-              [](auto t, auto baseline_,auto drift_,
-                 auto A0_, auto f0_, auto ph0_, auto tau0_,
-                 auto A1_, auto f1_, auto ph1_, auto tau1_ )
-              {
-//                using a=typename decltype(t)::t;
-//                using b=typename decltype(baseline_)::baseline;
-//                using c=typename decltype(drift_)::drift;
- //              using d=typename decltype(A0_)::A0;
-//                using e=typename decltype(tau0_)::tau;
-
-                    return baseline_+(drift_*t)+
-                       A0_*exp(
-                                 -t/tau0_
-                                 )*
-                           cos(2*PI*f0_*GHz_f*t*ps_f
-                               +ph0_)+
-                       A1_*exp(-t/tau1_)*cos(2*PI*f1_*GHz_f*t*ps_f+ph1_);},
-              delay{},baseline{},drift{},
-              ind<Amplitude,0>{},ind<Frecuency,0>{},ind<phase,0>{},ind<tau,0>{},
-              ind<Amplitude,1>{},ind<Frecuency,1>{},ind<phase,1>{},ind<tau,1>{})
-      };
-
-  auto mymodel_3=
-      quimulun{
-          D(signal{},Normal_Distribution{},mean<signal>{},stddev<signal>{}),
-          F(mean<signal>{},
-              [](auto t, auto baseline_,auto drift_,
-                 auto A0_f0_, auto ph0_, auto tau0_,
-                 auto A1_, auto f1_, auto ph1_, auto tau1_ ,
-                 auto A2_, auto f2_, auto ph2_, auto tau2_ )
-              {
-                //                using a=typename decltype(t)::t;
-                //                using b=typename decltype(baseline_)::baseline;
-                //                using c=typename decltype(drift_)::drift;
-                //              using d=typename decltype(A0_)::A0;
-                //                using e=typename decltype(tau0_)::tau;
-
-                return baseline_+(drift_*t)+
-                       std::get<0>(A0_f0_.value())()*exp(
-                                                           -t/tau0_
-                                                           )*
-                           cos(2*PI*std::get<1>(A0_f0_.value())()*GHz_f*t*ps_f
-                               +ph0_)+
-                       A1_*exp(-t/tau1_)*cos(2*PI*f1_*GHz_f*t*ps_f+ph1_)+
-                       A2_*exp(-t/tau2_)*cos(2*PI*f2_*GHz_f*t*ps_f+ph2_);
-              },
-              delay{},baseline{},drift{},
-              std::tuple<ind<Amplitude,0>,ind<Frecuency,0>>{},ind<phase,0>{},ind<tau,0>{},
-              ind<Amplitude,1>{},ind<Frecuency,1>{},ind<phase,1>{},ind<tau,1>{},
-              ind<Amplitude,2>{},ind<Frecuency,2>{},ind<phase,2>{},ind<tau,2>{})
-      };
-
-
-  auto data=vector_space{x_i(delay{}, vec<delay>{}),
-                           x_i(signal{},vec<delay>{})};
-
-  using  data_fields=Cs<delay,signal>;
-  std::string fname_a="antena_data_1.txt";
-  std::ifstream fi(fname_a.c_str());
-  from_DataFrame(fi,data);
-
+  std::string arg=argv[1];
+  std::cerr<<argv[0]<<"\n";
+  std::cerr<<argv[1]<<"\n";
 
   auto data_3=get_data_index<3>();
   std::string fname_3="m03.txt";
@@ -624,141 +419,81 @@ int main()
 
 
 
-  auto totalmodel=mymodel+myprior_dist+myprior_transf+myprior_values;
-  auto totalmodel_3=mymodel_3+myprior_dist_3+myprior_transf_3+myprior_values_3;
 
-  auto totalmodel_40=totalmodel_index(std::index_sequence<0,1,2>{},std::index_sequence<0,1>{},std::index_sequence<>{})+my_common_prior_values();
-  auto totalmodel_41=totalmodel_index(std::index_sequence<0,1,2>{},std::index_sequence<0,1,2>{},std::index_sequence<>{})+my_common_prior_values();
-
-  auto totalmodel_41_1=totalmodel_index(std::index_sequence<1>{},std::index_sequence<0,1,2>{},std::index_sequence<>{})+my_common_prior_values();
-  auto totalmodel_41_2=totalmodel_index(std::index_sequence<2>{},std::index_sequence<0,1,2>{},std::index_sequence<>{})+my_common_prior_values();
+  auto model_345_01_=totalmodel_index(std::index_sequence<3,4,5>{},std::index_sequence<0,1>{},std::index_sequence<>{})+my_common_prior_values();
+  auto model_345_0_4=totalmodel_index(std::index_sequence<3,4,5>{},std::index_sequence<0>{},std::index_sequence<4>{})+my_common_prior_values();
+  auto model_345_012_=totalmodel_index(std::index_sequence<3,4,5>{},std::index_sequence<0,1,2>{},std::index_sequence<>{})+my_common_prior_values();
+  auto model_345_012_4=totalmodel_index(std::index_sequence<3,4,5>{},std::index_sequence<0,1,2>{},std::index_sequence<4>{})+my_common_prior_values();
+  auto model_345_0123_=totalmodel_index(std::index_sequence<3,4,5>{},std::index_sequence<0,1,2,3>{},std::index_sequence<>{})+my_common_prior_values();
 
 
-  auto totalmodel_43=totalmodel_index(std::index_sequence<0,1,2>{},std::index_sequence<0,1,2,3>{},std::index_sequence<>{})+my_common_prior_values();
+  auto model_8910_01_=totalmodel_index(std::index_sequence<3,4,5>{},std::index_sequence<0,1>{},std::index_sequence<>{})+my_common_prior_values();
+  auto model_8910_0_4=totalmodel_index(std::index_sequence<3,4,5>{},std::index_sequence<0>{},std::index_sequence<4>{})+my_common_prior_values();
+  auto model_8910_012_=totalmodel_index(std::index_sequence<3,4,5>{},std::index_sequence<0,1,2>{},std::index_sequence<>{})+my_common_prior_values();
+  auto model_8910_012_4=totalmodel_index(std::index_sequence<3,4,5>{},std::index_sequence<0,1,2>{},std::index_sequence<4>{})+my_common_prior_values();
+  auto model_8910_0123_=totalmodel_index(std::index_sequence<3,4,5>{},std::index_sequence<0,1,2,3>{},std::index_sequence<>{})+my_common_prior_values();
 
-  auto totalmodel_42=totalmodel_index(std::index_sequence<0,1,2>{},std::index_sequence<0,1,2>{},std::index_sequence<3>{})+my_common_prior_values();
-  // using test=typename decltype (myprior_transf_index(std::index_sequence<0,1,2>{},std::index_sequence<0,1,2>{},std::index_sequence<3>{}))::ger;
 
   auto data_all=data_3+data_4+data_5+data_8+data_9+data_10;
 
   std::random_device rd;
-  auto initseed = 0;
-  //rd();
+  auto initseed = rd();
 
   std::mt19937 mt(initseed);
 
   auto mtv=v(std::move(mt));
-  //auto [par_42,var_42]=sample(totalmodel_42,mtv,data_all);
-
-  auto data_time=data|myselect<Cs<delay>>{};
 
 
-  std::mt19937 mt2(initseed);
-  auto mtv2=v(std::move(mt2));
 
-  auto data2=data_time;
-
-
-  auto [par, variables, predictions]=simulate(totalmodel,mtv,data);
-  auto [par2, variables2]=sample(totalmodel,mtv2,data);
-
-  auto logPriorv=logPrior(totalmodel,data,par2,variables2);
-  auto logLikv=logLikelihood(totalmodel,data,par2,variables2);
-
-  std::cerr<<"\nlogPriorv\n"<<logPriorv;
-  std::cerr<<"\nlogPriorv\n"<<logLikv;
-  auto dpar=Self_Derivative(par);
-  auto dvariables3 =calculate(totalmodel,data,dpar);
-
-  auto dlogPriorv=logPrior(totalmodel,data,dpar,dvariables3);
-  auto dlogL=logLikelihood(totalmodel,data,dpar,dvariables3);
-
-  auto fimPriorv=fimPrior(totalmodel,data,dpar,dvariables3);
-  auto fimLikv=fimLikelihood(totalmodel,data,dpar,dvariables3);
-
-
-  //  std::cerr<<"\ndlogPriorv\n"<<dlogPriorv;
-  //  std::cerr<<"\ndlogLikv\n"<<dlogL;
-
-  //  std::cerr<<"\ndvariables\n"<<dvariables3;
-
-
-  //    //auto s=sample(totalmodel,std::move(data2),mt);
-
-
-  // // auto data_sim=s| myselect<data_fields>{};
-
-
-  //  std::cerr << "parameters \n"<<par <<std::endl;
-  //  std::cerr << "parameters 2\n"<<par2 <<std::endl;
-  //  std::cerr << "dparameters \n"<<dpar <<std::endl;
-
-  //  std::cerr << "data \n"<<data <<std::endl;
-  //  std::cerr << "predictions \n"<<predictions <<std::endl;
-
-
-  // auto logL=logP(totalmodel,s);
-  auto be=std::vector<double>{0,1e-4,3e-4,1e-3,3e-3,1e-2,2e-2,0.05,0.1,0.15,0.2,0.25,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.0};
+  auto be=std::vector<double>{0,1e-4,3e-4,1e-3,3e-3,1e-2,2e-2,0.05,0.1,0.15,0.2,0.3,0.4,0.6,0.8,1.0};
   vector_field<vec<beta_ei>,v<double,dimension_less>> betas;
   auto pbe=betas.begin();
   for (auto &e:be)
   {
     insert_at(betas,pbe,std::move(e));
     ++pbe[beta_ei{}]();
-
   }
 
-  std::string fname_emcee="emcee";
-  //std::ofstream f_emcee(fname_emcee.c_str());
 
-  auto decimate_factor=std::vector<std::size_t>{1ul,1ul,10ul,50ul,100};
-  auto decimate_factor_1=std::vector<std::size_t>{1ul,1ul,1ul,1ul,1};
+  auto decimate_factor=std::vector<std::size_t>{10ul,100ul,1000ul,20000ul};
 
-  //  auto mcmc=parallel_emcee(totalmodel_41,data_42,betas,v<std::size_t,dimension_less>(100),initseed,100000,decimate_factor,fname_emcee);
-  //auto mcmc=parallel_emcee(totalmodel_42,data_42,betas,v<std::size_t,dimension_less>(100),initseed,100000,decimate_factor,fname_emcee);
-  //  auto mcmc=parallel_emcee(totalmodel_43,data_42,betas,v<std::size_t,dimension_less>(100),initseed,100000,decimate_factor,fname_emcee);
-  auto mcmc=parallel_emcee_series(totalmodel_41_<5>(),data_all,betas,v<std::size_t,dimension_less>(20),initseed,100000,decimate_factor,fname_emcee);
-  auto mcmc_par=parallel_emcee_parallel(totalmodel_41_<5>(),data_all,betas,v<std::size_t,dimension_less>(20),initseed,100000,decimate_factor,fname_emcee);
+  std::size_t maxiters=1000000;
+  std::size_t nwalkers=16;
 
-  // f_emcee.close();
-  std::string fname="out.txt";
-  std::ofstream f(fname.c_str());
-  auto s=dpar;
-  // to_DataFrame(f,variables+data);
-  // to_DataFrame(f,s);
-
-
-  auto qui=totalmodel;;
-  //auto dlogL=vector_space(logP(qui,data_sim,dpar));Z
-
-
-  //  std::cerr<<"\n\nFIM\n "<<fimLikv<<"\n";
-  auto dpar_new=decltype (dpar){};
-  auto fim_new=decltype(fimLikv){};
-  auto dlogLve=vector_space(std::move(dlogL));
-  auto dlogL_new=decltype(dlogLve){};
-  to_DataFrame(f,dlogLve);
-  f.close();
-
-  auto s_new=decltype (s){};
-  std::ifstream fe;
-  fe.open(fname.c_str());
-  if (fe.is_open())
+  if (arg=="pp_model_345_0_4")
   {
-    //from_DataFrame(fe,dlogL_new);
-    //      from_DataFrame(fe,fim_new);
-    //     from_DataFrame(fe,s_new);
-
+    parallel_emcee_parallel_parallel_for(model_345_0_4,data_all,betas,v<std::size_t,dimension_less>(nwalkers),initseed,maxiters,decimate_factor,arg);
   }
-  //  std::cerr<<"\ndlogL\n"<<dlogL;
-  //  std::cerr<<"\n dlogL_new\n"<<dlogL_new;
+  else if (arg=="p_model_345_0_4")
+  {
+    parallel_emcee_parallel(model_345_0_4,data_all,betas,v<std::size_t,dimension_less>(nwalkers),initseed,maxiters,decimate_factor,arg);
+  }
+  else if (arg=="sp_model_345_0_4")
+  {
+    parallel_emcee_series_parallel_for(model_345_0_4,data_all,betas,v<std::size_t,dimension_less>(nwalkers),initseed,maxiters,decimate_factor,arg);
+  }
+  else if (arg=="ss_model_345_0_4")
+  {
+    parallel_emcee_series(model_345_0_4,data_all,betas,v<std::size_t,dimension_less>(nwalkers),initseed,maxiters,decimate_factor,arg);
+  }
+  else if (arg=="pp_model_345_012_4")
+  {
+    parallel_emcee_parallel_parallel_for(model_345_012_4,data_all,betas,v<std::size_t,dimension_less>(nwalkers),initseed,maxiters,decimate_factor,arg);
+  }
+  else if (arg=="p_model_345_012_4")
+  {
+    parallel_emcee_parallel(model_345_012_4,data_all,betas,v<std::size_t,dimension_less>(nwalkers),initseed,maxiters,decimate_factor,arg);
+  }
+  else if (arg=="sp_model_345_012_4")
+  {
+    parallel_emcee_series_parallel_for(model_345_012_4,data_all,betas,v<std::size_t,dimension_less>(nwalkers),initseed,maxiters,decimate_factor,arg);
+  }
+  else if (arg=="ss_model_345_012_4")
+  {
+    parallel_emcee_series(model_345_012_4,data_all,betas,v<std::size_t,dimension_less>(nwalkers),initseed,maxiters,decimate_factor,arg);
+  }
+
+    return 0;
 
 
-
-
-  //  assert(dlogLve==dlogL_new);
-
-
-
-  return 0;
 }

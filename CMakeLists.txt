@@ -1,6 +1,5 @@
 cmake_minimum_required(VERSION 3.5)
 include_directories( quimulun/ )
-include_directories( quimulun/static_Utilities/ )
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
