@@ -1,0 +1,46 @@
+#!/bin/bash
+
+# Correr con `sbatch /ruta/a/este/script
+
+#SBATCH --job-name="pp_model_345_0_4"
+#SBATCH --nodes=1                    # Use one node
+#SBATCH --ntasks=1                   # Run a single task
+#SBATCH --cpus-per-task=64            # Number of CPU cores per task
+##SBATCH --time=01:00
+
+#SBATCH --workdir=/nfs/home/lmoffatt/Code/data
+#SBATCH --error="pp_model_345_0_4-%j.err"
+#SBATCH --output="pp_model_345_0_4-%j.out"
+#SBATCH --partition=free-rider
+#SBATCH --mail-type=ALL
+#SBATCH --mail-user=lmoffatt@gmail.com
+
+echo "trabajo \"${SLURM_JOB_NAME}\""
+echo "    id: ${SLURM_JOB_ID}"
+echo "    partición: ${SLURM_JOB_PARTITION}"
+echo "    nodos: ${SLURM_JOB_NODELIST}"
+echo "    cpus per task: ${SLURM_CPUS_PER_TASK}"
+echo
+date +"inicio %F - %T"
+
+echo "
+--------------------------------------------------------------------------------
+"
+
+
+# El path al programa es `/home/USUARIO/ejemplos/programa-openmp`. Como más
+# arriba seteamos el directorio de trabajo a `/home/USUARIO/ejemplos`, el
+# programa se encuentra en el directorio de trabajo, por lo que basta poner
+# `./programa-openmp`.
+
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/nfs/home/lmoffatt/GCC-9.2.0/lib64/
+
+export OMP_NUM_THREADS=$SLURM_CPUS_PER_TASK
+srun /nfs/home/lmoffatt/Code/antena/antena pp_model_345_0_4
+
+
+echo "
+--------------------------------------------------------------------------------
+"
+
+date +"fin %F - %T"
