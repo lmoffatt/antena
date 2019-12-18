@@ -1,8 +1,8 @@
 cmake_minimum_required(VERSION 3.5)
 include_directories( quimulun/ )
 
-set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
+#set(CMAKE_CXX_STANDARD 17)
+#set(CMAKE_CXX_STANDARD_REQUIRED ON)
 file(GLOB source_files "*.h" "*.cpp")
 
 project(antena LANGUAGES CXX)
