@@ -462,9 +462,9 @@ int main(int argc, char **argv)
 //  auto model_8910_01_=totalmodel_index(std::index_sequence<8,9,10>{},std::index_sequence<0,1>{},std::index_sequence<>{})+my_common_prior_values();
 //  auto model_8910_0_4=totalmodel_index(std::index_sequence<8,9,10>{},std::index_sequence<0>{},std::index_sequence<4>{})+my_common_prior_values();
 //  auto model_8910_0_45=totalmodel_index(std::index_sequence<8,9,10>{},std::index_sequence<0>{},std::index_sequence<4,5>{})+my_common_prior_values();
-//  auto model_8910_012_=totalmodel_index(std::index_sequence<8,9,10>{},std::index_sequence<0,1,2>{},std::index_sequence<>{})+my_common_prior_values();
+  auto model_8910_012_=totalmodel_index(std::index_sequence<8,9,10>{},std::index_sequence<0,1,2>{},std::index_sequence<>{})+my_common_prior_values();
 //  auto model_8910_012_4=totalmodel_index(std::index_sequence<8,9,10>{},std::index_sequence<0,1,2>{},std::index_sequence<4>{})+my_common_prior_values();
-  auto model_8910_0123_=totalmodel_index(std::index_sequence<8,9,10>{},std::index_sequence<0,1,2,3>{},std::index_sequence<>{})+my_common_prior_values();
+//  auto model_8910_0123_=totalmodel_index(std::index_sequence<8,9,10>{},std::index_sequence<0,1,2,3>{},std::index_sequence<>{})+my_common_prior_values();
 
 
   auto data_345=data_3+data_4+data_5;
@@ -492,12 +492,12 @@ int main(int argc, char **argv)
   auto decimate_factor=std::vector<std::size_t>{1000ul,1000ul,10000ul,400000ul};
 
   std::size_t maxiters=4000000;
-  std::size_t nwalkers=32;
+  std::size_t nwalkers=16;
 
   if (arg=="pp_model_345_012_4")
   {
     maxiters*=4;
-    parallel_emcee_parallel_parallel_for_q(model_345_012_4,data_345,betas,v<std::size_t,dimension_less>(nwalkers),initseed,maxiters,decimate_factor,arg);
+    parallel_emcee_parallel_parallel_for(model_345_012_4,data_345,betas,v<std::size_t,dimension_less>(nwalkers),initseed,maxiters,decimate_factor,arg);
   }
   /*else if (arg=="p_model_345_012_4")
   {
@@ -548,16 +548,32 @@ int main(int argc, char **argv)
   {
     parallel_emcee_parallel_parallel_for(model_8910_01_,data_8910,betas,v<std::size_t,dimension_less>(nwalkers),initseed,maxiters,decimate_factor,arg);
   }
+ */
+  else if (arg=="p_model_8910_012_")
+  {
+    maxiters*=2;
+    parallel_emcee_parallel(model_8910_012_,data_8910,betas,v<std::size_t,dimension_less>(nwalkers),initseed,maxiters,decimate_factor,arg);
+  }
   else if (arg=="pp_model_8910_012_")
   {
     maxiters*=2;
     parallel_emcee_parallel_parallel_for(model_8910_012_,data_8910,betas,v<std::size_t,dimension_less>(nwalkers),initseed,maxiters,decimate_factor,arg);
   }
-*/
-  else if (arg=="pp_model_8910_0123_")
+  else if (arg=="pp_model_8910_012_q")
+  {
+    maxiters*=2;
+    parallel_emcee_parallel_parallel_for_q(model_8910_012_,data_8910,betas,v<std::size_t,dimension_less>(nwalkers),initseed,maxiters,decimate_factor,arg);
+  }
+
+/*  else if (arg=="pp_model_8910_0123_")
   {
     maxiters*=4;
     parallel_emcee_parallel_parallel_for(model_8910_0123_,data_8910,betas,v<std::size_t,dimension_less>(nwalkers),initseed,maxiters,decimate_factor,arg);
+  }
+  else if (arg=="pp_model_8910_0123_q")
+  {
+    maxiters*=4;
+    parallel_emcee_parallel_parallel_for_q(model_8910_0123_,data_8910,betas,v<std::size_t,dimension_less>(nwalkers),initseed,maxiters,decimate_factor,arg);
   }
  /* else if (arg=="pp_model_8910_0_45")
   {
