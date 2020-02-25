@@ -1,0 +1,19 @@
+#!/bin/bash
+#
+# Script para correr trabajo serial
+#
+
+# Opciones SGE
+#$ -pe openmp 4
+#$ -l h_rt=23:59:00 # Setea 48 horas de wall clock time
+
+#$ -V  # Exporta las variables de entorno
+#$ -N m345_012_4  # El nombre del job
+#$ -cwd # Cambia al directorio actual
+
+
+
+# Comando para correr el programa, tal cual lo llamaríamos desde la línea de comandos
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/home/lmoffatt.inquimae/GCC-9.2.0/lib64/
+export OMP_NUM_THREADS=4
+/home/lmoffatt.inquimae/Code/andrea/bin2/antena pp_model_345_012_4

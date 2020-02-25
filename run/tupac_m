@@ -2,15 +2,15 @@
 
 # Correr con `sbatch /ruta/a/este/script
 
-#SBATCH --job-name="pp_model_345_012_4"
+#SBATCH --job-name="pp_model_1"
 #SBATCH --nodes=1                    # Use one node
-#SBATCH --ntasks=1                   # Run a single task
-#SBATCH --cpus-per-task=64            # Number of CPU cores per task
-#SBATCH --time=01:00
+#SBATCH --ntasks=16                   # Run a single task
+#SBATCH --cpus-per-task=4            # Number of CPU cores per task
+##SBATCH --time=5:00
 
-#SBATCH --workdir=/nfs/home/lmoffatt/Code/data
-#SBATCH --error="pp_model_345_012_4-%j.err"
-#SBATCH --output="pp_model_345_012_4-%j.out"
+#SBATCH --workdir=/nfs/home/lmoffatt/Code/data/new
+#SBATCH --error="pp_model_-%j.err"
+#SBATCH --output="pp_model_-%j.out"
 #SBATCH --partition=free-rider
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=lmoffatt@gmail.com
@@ -36,8 +36,7 @@ echo "
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/nfs/home/lmoffatt/GCC-9.2.0/lib64/
 
 export OMP_NUM_THREADS=$SLURM_CPUS_PER_TASK
-srun /home/lmoffatt/Code/antena/antena pp_model_345_012_4
-
+srun /nfs/home/lmoffatt/Code/bin/antena
 
 echo "
 --------------------------------------------------------------------------------

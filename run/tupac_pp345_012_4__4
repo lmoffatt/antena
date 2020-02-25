@@ -36,7 +36,7 @@ echo "
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/nfs/home/lmoffatt/GCC-9.2.0/lib64/
 
 export OMP_NUM_THREADS=$SLURM_CPUS_PER_TASK
-srun /nfs/home/lmoffatt/Code/antena/antena pp_model_345_012_4
+srun /nfs/home/lmoffatt/Code/bin/antena pp_model_345_012_4
 
 
 echo "
