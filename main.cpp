@@ -455,7 +455,7 @@ int main(int argc, char **argv)
 //  auto model_345_0_4=totalmodel_index(std::index_sequence<3,4,5>{},std::index_sequence<0>{},std::index_sequence<4>{})+my_common_prior_values();
 //  auto model_345_0_45=totalmodel_index(std::index_sequence<3,4,5>{},std::index_sequence<0>{},std::index_sequence<4,5>{})+my_common_prior_values();
 //  auto model_345_012_=totalmodel_index(std::index_sequence<3,4,5>{},std::index_sequence<0,1,2>{},std::index_sequence<>{})+my_common_prior_values();
-  auto model_345_012_4=totalmodel_index(std::index_sequence<3,4,5>{},std::index_sequence<0,1,2>{},std::index_sequence<4>{})+my_common_prior_values();
+ // auto model_345_012_4=totalmodel_index(std::index_sequence<3,4,5>{},std::index_sequence<0,1,2>{},std::index_sequence<4>{})+my_common_prior_values();
 //  auto model_345_0123_=totalmodel_index(std::index_sequence<3,4,5>{},std::index_sequence<0,1,2,3>{},std::index_sequence<>{})+my_common_prior_values();
 
 
@@ -472,6 +472,7 @@ int main(int argc, char **argv)
 
   std::random_device rd;
   auto initseed = rd();
+  initseed=0;
 
   std::mt19937 mt(initseed);
 
@@ -488,18 +489,19 @@ int main(int argc, char **argv)
     ++pbe[beta_ei{}]();
   }
 
-
   auto decimate_factor=std::vector<std::size_t>{1000ul,1000ul,10000ul,400000ul};
+//  auto decimate_factor=std::vector<std::size_t>{1ul,1ul,1ul,4ul};
 
+//  std::size_t maxiters=20;
   std::size_t maxiters=4000000;
   std::size_t nwalkers=16;
 
-  if (arg=="pp_model_345_012_4")
+/*  if (arg=="pp_model_345_012_4")
   {
     maxiters*=4;
     parallel_emcee_parallel_parallel_for(model_345_012_4,data_345,betas,v<std::size_t,dimension_less>(nwalkers),initseed,maxiters,decimate_factor,arg);
   }
-  /*else if (arg=="p_model_345_012_4")
+  else if (arg=="p_model_345_012_4")
   {
     parallel_emcee_parallel(model_345_012_4,data_all,betas,v<std::size_t,dimension_less>(nwalkers),initseed,maxiters,decimate_factor,arg);
   }*/
@@ -548,8 +550,8 @@ int main(int argc, char **argv)
   {
     parallel_emcee_parallel_parallel_for(model_8910_01_,data_8910,betas,v<std::size_t,dimension_less>(nwalkers),initseed,maxiters,decimate_factor,arg);
   }
- */
-  else if (arg=="p_model_8910_012_")
+
+  else */if (arg=="p_model_8910_012_")
   {
     maxiters*=2;
     parallel_emcee_parallel(model_8910_012_,data_8910,betas,v<std::size_t,dimension_less>(nwalkers),initseed,maxiters,decimate_factor,arg);
@@ -564,8 +566,7 @@ int main(int argc, char **argv)
     maxiters*=2;
     parallel_emcee_parallel_parallel_for_q(model_8910_012_,data_8910,betas,v<std::size_t,dimension_less>(nwalkers),initseed,maxiters,decimate_factor,arg);
   }
-
-/*  else if (arg=="pp_model_8910_0123_")
+  /*  else if (arg=="pp_model_8910_0123_")
   {
     maxiters*=4;
     parallel_emcee_parallel_parallel_for(model_8910_0123_,data_8910,betas,v<std::size_t,dimension_less>(nwalkers),initseed,maxiters,decimate_factor,arg);
