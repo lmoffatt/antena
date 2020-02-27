@@ -388,8 +388,8 @@ int main(int argc, char **argv)
 
   if (argc>1)
   {
-  arg=argv[1];
-  std::cerr<<argv[1]<<"\n";
+    arg=argv[1];
+    std::cerr<<argv[1]<<"\n";
   }
   else
   {
@@ -397,8 +397,8 @@ int main(int argc, char **argv)
     auto jid=std::getenv("SLURM_JOB_ID");
 
     char const* args[]={"pp_model_345_01_","pp_model_345_012_","pp_model_345_0123_","pp_model_345_012_4","pp_model_345_0_4","pp_model_345_0_45",
-                 "pp_model_8910_01_","pp_model_8910_012_","pp_model_8910_0123_","pp_model_8910_012_4","pp_model_8910_0_4","pp_model_8910_0_45"
-                 };
+                          "pp_model_8910_01_","pp_model_8910_012_","pp_model_8910_0123_","pp_model_8910_012_4","pp_model_8910_0_4","pp_model_8910_0_45"
+    };
     if (tpid!=nullptr)
     {
       std::cerr<<"SLURM_JOB_ID="<<jid<<"\t"<<"SLURM_TASK_PID="<<tpid<<"\n";
@@ -411,39 +411,39 @@ int main(int argc, char **argv)
 
 
   auto data_3=get_data_index<3>();
-//  std::string fname_3="m03.txt";
+  //  std::string fname_3="m03.txt";
   std::string fname_3="m03_5.txt";
   std::ifstream fi_3(fname_3.c_str());
   from_DataFrame(fi_3,data_3);
 
   auto data_4=get_data_index<4>();
-//  std::string fname_4="m04.txt";
+  //  std::string fname_4="m04.txt";
   std::string fname_4="m04_5.txt";
   std::ifstream fi_4(fname_4.c_str());
   from_DataFrame(fi_4,data_4);
 
   auto data_5=get_data_index<5>();
-//  std::string fname_5="m05.txt";
+  //  std::string fname_5="m05.txt";
   std::string fname_5="m05_5.txt";
   std::ifstream fi_5(fname_5.c_str());
   from_DataFrame(fi_5,data_5);
 
 
   auto data_8=get_data_index<8>();
-//  std::string fname_8="m08.txt";
+  //  std::string fname_8="m08.txt";
   std::string fname_8="m08_5.txt";
   std::ifstream fi_8(fname_8.c_str());
   from_DataFrame(fi_8,data_8);
 
   auto data_9=get_data_index<9>();
-//  std::string fname_9="m09.txt";
+  //  std::string fname_9="m09.txt";
   std::string fname_9="m09_5.txt";
   std::ifstream fi_9(fname_9.c_str());
   from_DataFrame(fi_9,data_9);
 
 
   auto data_10=get_data_index<10>();
-//  std::string fname_10="m10.txt";
+  //  std::string fname_10="m10.txt";
   std::string fname_10="m10_5.txt";
   std::ifstream fi_10(fname_10.c_str());
   from_DataFrame(fi_10,data_10);
@@ -451,20 +451,20 @@ int main(int argc, char **argv)
 
 
 
-//  auto model_345_01_=totalmodel_index(std::index_sequence<3,4,5>{},std::index_sequence<0,1>{},std::index_sequence<>{})+my_common_prior_values();
-//  auto model_345_0_4=totalmodel_index(std::index_sequence<3,4,5>{},std::index_sequence<0>{},std::index_sequence<4>{})+my_common_prior_values();
-//  auto model_345_0_45=totalmodel_index(std::index_sequence<3,4,5>{},std::index_sequence<0>{},std::index_sequence<4,5>{})+my_common_prior_values();
-//  auto model_345_012_=totalmodel_index(std::index_sequence<3,4,5>{},std::index_sequence<0,1,2>{},std::index_sequence<>{})+my_common_prior_values();
- // auto model_345_012_4=totalmodel_index(std::index_sequence<3,4,5>{},std::index_sequence<0,1,2>{},std::index_sequence<4>{})+my_common_prior_values();
-//  auto model_345_0123_=totalmodel_index(std::index_sequence<3,4,5>{},std::index_sequence<0,1,2,3>{},std::index_sequence<>{})+my_common_prior_values();
+  //  auto model_345_01_=totalmodel_index(std::index_sequence<3,4,5>{},std::index_sequence<0,1>{},std::index_sequence<>{})+my_common_prior_values();
+  //  auto model_345_0_4=totalmodel_index(std::index_sequence<3,4,5>{},std::index_sequence<0>{},std::index_sequence<4>{})+my_common_prior_values();
+  //  auto model_345_0_45=totalmodel_index(std::index_sequence<3,4,5>{},std::index_sequence<0>{},std::index_sequence<4,5>{})+my_common_prior_values();
+  //  auto model_345_012_=totalmodel_index(std::index_sequence<3,4,5>{},std::index_sequence<0,1,2>{},std::index_sequence<>{})+my_common_prior_values();
+  // auto model_345_012_4=totalmodel_index(std::index_sequence<3,4,5>{},std::index_sequence<0,1,2>{},std::index_sequence<4>{})+my_common_prior_values();
+  //  auto model_345_0123_=totalmodel_index(std::index_sequence<3,4,5>{},std::index_sequence<0,1,2,3>{},std::index_sequence<>{})+my_common_prior_values();
 
 
-//  auto model_8910_01_=totalmodel_index(std::index_sequence<8,9,10>{},std::index_sequence<0,1>{},std::index_sequence<>{})+my_common_prior_values();
-//  auto model_8910_0_4=totalmodel_index(std::index_sequence<8,9,10>{},std::index_sequence<0>{},std::index_sequence<4>{})+my_common_prior_values();
-//  auto model_8910_0_45=totalmodel_index(std::index_sequence<8,9,10>{},std::index_sequence<0>{},std::index_sequence<4,5>{})+my_common_prior_values();
+  //  auto model_8910_01_=totalmodel_index(std::index_sequence<8,9,10>{},std::index_sequence<0,1>{},std::index_sequence<>{})+my_common_prior_values();
+  //  auto model_8910_0_4=totalmodel_index(std::index_sequence<8,9,10>{},std::index_sequence<0>{},std::index_sequence<4>{})+my_common_prior_values();
+  //  auto model_8910_0_45=totalmodel_index(std::index_sequence<8,9,10>{},std::index_sequence<0>{},std::index_sequence<4,5>{})+my_common_prior_values();
   auto model_8910_012_=totalmodel_index(std::index_sequence<8,9,10>{},std::index_sequence<0,1,2>{},std::index_sequence<>{})+my_common_prior_values();
-//  auto model_8910_012_4=totalmodel_index(std::index_sequence<8,9,10>{},std::index_sequence<0,1,2>{},std::index_sequence<4>{})+my_common_prior_values();
-//  auto model_8910_0123_=totalmodel_index(std::index_sequence<8,9,10>{},std::index_sequence<0,1,2,3>{},std::index_sequence<>{})+my_common_prior_values();
+  //  auto model_8910_012_4=totalmodel_index(std::index_sequence<8,9,10>{},std::index_sequence<0,1,2>{},std::index_sequence<4>{})+my_common_prior_values();
+  //  auto model_8910_0123_=totalmodel_index(std::index_sequence<8,9,10>{},std::index_sequence<0,1,2,3>{},std::index_sequence<>{})+my_common_prior_values();
 
 
   auto data_345=data_3+data_4+data_5;
@@ -490,13 +490,13 @@ int main(int argc, char **argv)
   }
 
   auto decimate_factor=std::vector<std::size_t>{1000ul,1000ul,10000ul,400000ul};
-//  auto decimate_factor=std::vector<std::size_t>{1ul,1ul,1ul,4ul};
+  //  auto decimate_factor=std::vector<std::size_t>{1ul,1ul,1ul,4ul};
 
-//  std::size_t maxiters=20;
+  //  std::size_t maxiters=20;
   std::size_t maxiters=4000000;
   std::size_t nwalkers=16;
 
-/*  if (arg=="pp_model_345_012_4")
+  /*  if (arg=="pp_model_345_012_4")
   {
     maxiters*=4;
     parallel_emcee_parallel_parallel_for(model_345_012_4,data_345,betas,v<std::size_t,dimension_less>(nwalkers),initseed,maxiters,decimate_factor,arg);
@@ -505,7 +505,7 @@ int main(int argc, char **argv)
   {
     parallel_emcee_parallel(model_345_012_4,data_all,betas,v<std::size_t,dimension_less>(nwalkers),initseed,maxiters,decimate_factor,arg);
   }*/
-/*  else if (arg=="sp_model_345_012_4")
+  /*  else if (arg=="sp_model_345_012_4")
   {
     parallel_emcee_series_parallel_for(model_345_012_4,data_345,betas,v<std::size_t,dimension_less>(nwalkers),initseed,maxiters,decimate_factor,arg);
   }
@@ -582,7 +582,7 @@ int main(int argc, char **argv)
     parallel_emcee_parallel_parallel_for(model_8910_0_45,data_8910,betas,v<std::size_t,dimension_less>(nwalkers),initseed,maxiters,decimate_factor,arg);
   }
 */
-    return 0;
+  return 0;
 
 
 }
