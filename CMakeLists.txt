@@ -7,9 +7,11 @@ file(GLOB source_files "*.h" "*.cpp")
 
 project(antena LANGUAGES CXX)
 add_compile_options(-Wall -Wextra -Werror=return-type -std=c++17 -ftemplate-backtrace-limit=0 -fmax-errors=10 -fopenmp -fconstexpr-depth=10 )
+#-fsanitize=address -fno-omit-frame-pointer)
 #-fconstexpr-steps=10485760 )
+
 add_executable(antena	 ${source_files})
 find_package(OpenMP)
 if(OpenMP_CXX_FOUND)
-    target_link_libraries(antena PUBLIC OpenMP::OpenMP_CXX)
+    target_link_libraries(antena PUBLIC OpenMP::OpenMP_CXX ) #-fsanitize=address)
 endif()

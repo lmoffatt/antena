@@ -2,7 +2,8 @@
 #include <static_string.h>
 #include <qm_unit.h>
 #include <mytypetraits.h>
-#include <qm_tensor_model.h>
+#include <qm_tensor_model_evaluation.h>
+#include <qm_tensor_model_evaluation_new.h>
 #include <fstream>
 #include <my_tests.h>
 #include <qm_Metropolis_Parallel.h>
@@ -96,9 +97,9 @@ template<std::size_t J>
 auto myprior_dist_stddev()
 {
   return quimulun{
-      D(ind<baseline,J>{},Normal_Distribution{},mean<baseline>{},stddev<baseline>{}),
-      D(ind<drift,J>{},Normal_Distribution{},mean<drift>{},stddev<drift>{}),
-      D(Log10_t<stddev<ind<signal,J>>>{},Normal_Distribution{},mean<Log10_t<stddev<signal>>>{},stddev<Log10_t<stddev<signal>>>{})
+      D(ind<baseline,J>{},Normal_Distribution<double>{},Arguments<mean<baseline>,stddev<baseline>>{}),
+      D(ind<drift,J>{},Normal_Distribution<double>{},Arguments<mean<drift>,stddev<drift>>{}),
+      D(Log10_t<stddev<ind<signal,J>>>{},Normal_Distribution<double>{},Arguments<mean<Log10_t<stddev<signal>>>,stddev<Log10_t<stddev<signal>>>>{})
 
   };
 }
@@ -108,16 +109,16 @@ auto myprior_dist_frequency()
 {
   if constexpr (I>0)
     return quimulun{
-        D(ind<Log10_t<Frecuency>,I>{},Normal_Distribution{},mean<Log10_t<Frecuency>>{},stddev<Log10_t<Frecuency>>{})};
+        D(ind<Log10_t<Frecuency>,I>{},Normal_Distribution<double>{},Arguments<mean<Log10_t<Frecuency>>,stddev<Log10_t<Frecuency>>>{})};
   else  return quimulun{
-        D(ind<Log10_t<Frecuency>,I>{},Normal_Distribution{},mean<Log10_t<ind<Frecuency,0>>>{},stddev<Log10_t<Frecuency>>{})};
+        D(ind<Log10_t<Frecuency>,I>{},Normal_Distribution<double>{},Arguments<mean<Log10_t<ind<Frecuency,0>>>,stddev<Log10_t<Frecuency>>>{})};
 
 }
 template<std::size_t I, std::size_t J>
 auto myprior_dist_frequency()
 {
   return quimulun{
-      D(ind<Log10_t<Frecuency>,I,J>{},Normal_Distribution{},mean<Log10_t<Frecuency>>{},stddev<Log10_t<Frecuency>>{})};
+      D(ind<Log10_t<Frecuency>,I,J>{},Normal_Distribution<double>{},Arguments<mean<Log10_t<Frecuency>>,stddev<Log10_t<Frecuency>>>{})};
 }
 
 
@@ -125,9 +126,9 @@ template<std::size_t I, std::size_t J>
 auto myprior_dist_amplitude()
 {
   return quimulun{
-      D(ind<Log10_t<Amplitude>,I,J>{},Normal_Distribution{},mean<Log10_t<Amplitude>>{},stddev<Log10_t<Amplitude>>{}),
-      D(ind<phase,I,J>{},Normal_Distribution{},mean<phase>{},stddev<phase>{}),
-      D(ind<Log10_t<tau>,I,J>{},Normal_Distribution{},mean<Log10_t<tau>>{},stddev<Log10_t<tau>>{})};
+      D(ind<Log10_t<Amplitude>,I,J>{},Normal_Distribution<double>{},Arguments<mean<Log10_t<Amplitude>>,stddev<Log10_t<Amplitude>>>{}),
+      D(ind<phase,I,J>{},Normal_Distribution<double>{},Arguments<mean<phase>,stddev<phase>>{}),
+      D(ind<Log10_t<tau>,I,J>{},Normal_Distribution<double>{},Arguments<mean<Log10_t<tau>>,stddev<Log10_t<tau>>>{})};
 }
 
 template <std::size_t J, std::size_t...I0>
@@ -188,6 +189,7 @@ auto myprior_sort_Amplitude(std::index_sequence<I...>, std::integral_constant<st
 
 
 }
+
 
 template<std::size_t J>
 auto myprior_transf_stddev(){return quimulun{
@@ -281,9 +283,10 @@ auto myprior_transf_index(std::index_sequence<J...>,std::index_sequence<I0...> i
 }
 
 template <std::size_t J, std::size_t...I0>
-auto mymodel_index(std::index_sequence<I0...>,std::index_sequence<>){return
+auto mymodel_index(std::index_sequence<I0...>,std::index_sequence<>){
+  return
       quimulun{
-          D(ind<signal,J>{},Normal_Distribution{},mean<ind<signal,J>>{},stddev<ind<signal,J>>{}),
+          D(ind<signal,J>{},Normal_Distribution<double>{},Arguments<mean<ind<signal,J>>,stddev<ind<signal,J>>>{}),
           F(mean<ind<signal,J>>{},
               [](auto t, auto baseline_,auto drift_,
                  auto const& A0_, auto const& f0_,  auto const& ph0_, auto const& tau0_)
@@ -311,7 +314,7 @@ auto mymodel_index(std::index_sequence<I0...>,std::index_sequence<>){return
 template <std::size_t J, std::size_t...I0, std::size_t I00, std::size_t...I1>
 auto mymodel_index(std::index_sequence<I0...>,std::index_sequence<I00,I1...>){return
       quimulun{
-          D(ind<signal,J>{},Normal_Distribution{},mean<ind<signal,J>>{},stddev<ind<signal,J>>{}),
+          D(ind<signal,J>{},Normal_Distribution<double>{},mean<ind<signal,J>>{},stddev<ind<signal,J>>{}),
           F(mean<ind<signal,J>>{},
               [](auto t, auto baseline_,auto drift_,
                  auto const& A0_, auto const& A1_,auto const& f0_,auto const& f1_,  auto const& ph0_, auto const& ph1_,auto const& tau0_,
@@ -371,6 +374,196 @@ auto totalmodel_index(std::index_sequence<J...> j,std::index_sequence<I0...> i0,
          +myprior_transf_index(j,i0,i1);
   //+my_common_prior_values();
 }
+
+namespace mynew {
+  template<std::size_t J>
+  auto myprior_transf_stddev(){return quimulun{
+        F_new(stddev<ind<signal,J>>{},Log10_rev{},Arguments<Log10_t<stddev<ind<signal,J>>>>{})
+    };
+  }
+
+      template<std::size_t J,std::size_t... I>
+      auto myprior_transf_Amplitude(std::index_sequence<I...>)
+  {
+    return quimulun{
+            F_new(ind<Amplitude,I,J>{},Log10_rev{},Arguments<ind<Log10_t<Amplitude>,I,J>>{})...,
+            F_new(ind<tau,I,J>{},Log10_rev{},Arguments<ind<Log10_t<tau>,I,J>>{})...,
+        };
+  }
+
+  template<std::size_t I>
+  auto myprior_transf_frequency()
+  {
+    return quimulun{
+        F_new(ind<Frecuency,I>{},Log10_rev{},Arguments<ind<Log10_t<Frecuency>,I>>{})
+    };
+  }
+  template<std::size_t I, std::size_t J>
+  auto myprior_transf_frequency()
+  {
+    return quimulun{
+        F_new(ind<Frecuency,I,J>{},Log10_rev{},Arguments<ind<Log10_t<Frecuency>,I,J>>{})
+    };
+  }
+
+  template<std::size_t I,std::size_t... Is>
+  auto myprior_transf_Frequency_sum(std::integral_constant<std::size_t,I>,std::index_sequence<Is...>)
+  {
+    return quimulun{
+        F_new(ind<Frecuency,I>{},
+            [](auto const& ...f){
+              using std::pow;
+              return (pow(10.0,f)+...);}
+
+            ,Arguments<ind<Log10_t<Frecuency>,I-Is>...>{})
+    };
+  }
+
+  template<std::size_t I, std::size_t... Is>
+  auto myprior_transf_Frequency_sum(std::index_sequence<I,Is...>)
+  {
+    return (myprior_transf_Frequency_sum(std::integral_constant<std::size_t,I>{},std::index_sequence<0>{})+
+            ...+myprior_transf_Frequency_sum(std::integral_constant<std::size_t,Is>{},std::make_index_sequence<Is-I>{}));
+  }
+
+  template<std::size_t J,std::size_t I,std::size_t... Is>
+  auto myprior_transf_Frequency_sum(std::index_sequence<Is...>)
+  {
+    return quimulun{
+        F_new(ind<Frecuency,I,J>{},
+            [](auto const& ...f){
+              using std::pow;
+              return (pow(10.0,f)+...);}
+
+            ,Arguments<ind<Log10_t<Frecuency>,I-Is,J>...>{})
+    };
+  }
+
+  template<std::size_t J, std::size_t I,std::size_t... Is>
+  auto myprior_transf_Frequency_sum(std::index_sequence<I,Is...>)
+  {
+    return (myprior_transf_Frequency_sum<J,I>(std::index_sequence<0>{})+
+            ...+myprior_transf_Frequency_sum<J,Is>(std::make_index_sequence<Is-I>{}));
+  }
+
+
+  template <std::size_t J, std::size_t...I0>
+  auto myprior_transf_index(std::index_sequence<I0...> i0,std::index_sequence<> )
+  {
+    return myprior_transf_stddev<J>()+
+           myprior_transf_Amplitude<J>(i0);
+  }
+
+
+  template <std::size_t J, std::size_t...I0, std::size_t I00,std::size_t...I1>
+  auto myprior_transf_index(std::index_sequence<I0...> i0,std::index_sequence<I00,I1...> i1)
+  {
+    return myprior_transf_stddev<J>()+(myprior_transf_frequency<I00,J>()+...+myprior_transf_frequency<I1,J>())+
+           myprior_transf_Amplitude<J>(i0)+myprior_transf_Amplitude<J>(i1);
+  }
+  template <std::size_t... J, std::size_t...I0, std::size_t...I1>
+  auto myprior_transf_index(std::index_sequence<J...>,std::index_sequence<I0...> i0,std::index_sequence<I1...> i1)
+  {
+    return (myprior_transf_index<J>(i0,i1)+...)+(myprior_transf_frequency<I0>()+...);
+  }
+
+  template <std::size_t J, std::size_t...I0>
+  auto mymodel_index(std::index_sequence<I0...>,std::index_sequence<>){
+    return
+        quimulun{
+            D(ind<signal,J>{},Normal_Distribution<double>{},Arguments<mean<ind<signal,J>>,stddev<ind<signal,J>>>{}),
+            F_new(mean<ind<signal,J>>{},
+                [](auto t, auto baseline_,auto drift_,
+                   auto const& A0_, auto const& f0_,  auto const& ph0_, auto const& tau0_)
+
+                {
+                  auto y0=baseline_+(drift_*t);
+                  auto y1=((std::get<I0>(A0_.value())*exp(-t/std::get<I0>(tau0_.value()))*
+                              cos(2*PI*std::get<I0>(f0_.value())*GHz_f*t*ps_f+std::get<I0>(ph0_.value())))+...);
+
+                  return y0+y1;
+
+                  //return baseline_;
+                },
+                Arguments<ind<delay,J>,ind<baseline,J>,ind<drift,J>,
+                std::tuple<ind<Amplitude,I0,J>...>,
+                std::tuple<ind<Frecuency,I0>...>,
+                std::tuple<ind<phase,I0,J>...>,
+                          std::tuple<ind<tau,I0,J>...>>{})
+        };
+
+
+  }
+
+
+  template <std::size_t J, std::size_t...I0, std::size_t I00, std::size_t...I1>
+  auto mymodel_index(std::index_sequence<I0...>,std::index_sequence<I00,I1...>){return
+        quimulun{
+            D(ind<signal,J>{},Normal_Distribution<double>{},mean<ind<signal,J>>{},stddev<ind<signal,J>>{}),
+            F_new(mean<ind<signal,J>>{},
+                [](auto t, auto baseline_,auto drift_,
+                   auto const& A0_, auto const& A1_,auto const& f0_,auto const& f1_,  auto const& ph0_, auto const& ph1_,auto const& tau0_,
+                   auto const& tau1_ )
+
+                {
+                  auto y0=baseline_+(drift_*t);
+                  auto y1=((std::get<I0>(A0_.value())*exp(-t/std::get<I0>(tau0_.value()))*
+                              cos(2*PI*std::get<I0>(f0_.value())*GHz_f*t*ps_f+std::get<I0>(ph0_.value())))+...);
+                  auto y2=((std::get<0>(A1_.value())*exp(-t/std::get<0>(tau1_.value()))*
+                              cos(2*PI*std::get<0>(f1_.value())*GHz_f*t*ps_f+std::get<0>(ph1_.value()))));
+                  if constexpr (sizeof... (I1)==0)
+
+                    return y0+y1+y2;
+                  else
+                  {
+                    auto y3=((std::get<I1-I00>(A1_.value())*exp(-t/std::get<I1-I00>(tau1_.value()))*
+                                cos(2*PI*std::get<I1-I00>(f1_.value())*GHz_f*t*ps_f+std::get<I1-I00>(ph1_.value())))+...);
+                    return y0+y1+y2+y3;
+
+                  }
+                  //return baseline_;
+                },
+                ind<delay,J>{},ind<baseline,J>{},ind<drift,J>{},
+                std::tuple<ind<Amplitude,I0,J>...>{},
+                std::tuple<ind<Amplitude,I00,J>,ind<Amplitude,I1,J>...>{},
+                std::tuple<ind<Frecuency,I0>...>{},
+                std::tuple<ind<Frecuency,I00,J>,ind<Frecuency,I1,J>...>{},
+                std::tuple<ind<phase,I0,J>...>{},
+                std::tuple<ind<phase,I00,J>,ind<phase,I1,J>...>{},
+                std::tuple<ind<tau,I0,J>...>{},
+                std::tuple<ind<tau,I00,J>,ind<tau,I1,J>...>{})
+        };
+
+
+  }
+
+  template <std::size_t... J, std::size_t...I0, std::size_t...I1>
+  auto mymodel_index(std::index_sequence<J...>,std::index_sequence<I0...> i0,std::index_sequence<I1...> i1)
+  {
+    return (mymodel_index<J>(i0,i1)+...);
+  }
+
+
+  template <std::size_t... J, std::size_t...I0, std::size_t...I1>
+  auto totalmodel_index(std::index_sequence<J...> j,std::index_sequence<I0...> i0,std::index_sequence<I1...> i1)
+  {
+    return mymodel_index(j,i0,i1)+myprior_dist_index(j,i0,i1)
+           +myprior_transf_index(j,i0,i1);
+    //+my_common_prior_values();
+  }
+
+  template <std::size_t... J, std::size_t...I0>
+  auto totalmodel_index(std::index_sequence<J...> j,std::index_sequence<I0...> i0,std::index_sequence<> i1)
+  {
+    return mymodel_index(j,i0,i1)+myprior_dist_index(j,i0,i1)
+           +myprior_transf_index(j,i0,i1);
+    //+my_common_prior_values();
+  }
+
+}
+
+
+
 
 
 template<std::size_t J>
@@ -463,6 +656,7 @@ int main(int argc, char **argv)
   //  auto model_8910_0_4=totalmodel_index(std::index_sequence<8,9,10>{},std::index_sequence<0>{},std::index_sequence<4>{})+my_common_prior_values();
   //  auto model_8910_0_45=totalmodel_index(std::index_sequence<8,9,10>{},std::index_sequence<0>{},std::index_sequence<4,5>{})+my_common_prior_values();
   auto model_8910_012_=totalmodel_index(std::index_sequence<8,9,10>{},std::index_sequence<0,1,2>{},std::index_sequence<>{})+my_common_prior_values();
+  auto model_8910_012_new=mynew::totalmodel_index(std::index_sequence<8,9,10>{},std::index_sequence<0,1,2>{},std::index_sequence<>{})+my_common_prior_values();
   //  auto model_8910_012_4=totalmodel_index(std::index_sequence<8,9,10>{},std::index_sequence<0,1,2>{},std::index_sequence<4>{})+my_common_prior_values();
   //  auto model_8910_0123_=totalmodel_index(std::index_sequence<8,9,10>{},std::index_sequence<0,1,2,3>{},std::index_sequence<>{})+my_common_prior_values();
 
@@ -551,12 +745,12 @@ int main(int argc, char **argv)
     parallel_emcee_parallel_parallel_for(model_8910_01_,data_8910,betas,v<std::size_t,dimension_less>(nwalkers),initseed,maxiters,decimate_factor,arg);
   }
 
-  else */if (arg=="p_model_8910_012_")
+  else if (arg=="sp_model_8910_012_")
   {
     maxiters*=2;
-    parallel_emcee_parallel(model_8910_012_,data_8910,betas,v<std::size_t,dimension_less>(nwalkers),initseed,maxiters,decimate_factor,arg);
+    parallel_emcee_series_parallel_for(model_8910_012_,data_8910,betas,v<std::size_t,dimension_less>(nwalkers),initseed,maxiters,decimate_factor,arg);
   }
-  else if (arg=="pp_model_8910_012_")
+  else */ if (arg=="pp_model_8910_012_")
   {
     maxiters*=2;
     parallel_emcee_parallel_parallel_for(model_8910_012_,data_8910,betas,v<std::size_t,dimension_less>(nwalkers),initseed,maxiters,decimate_factor,arg);
@@ -565,6 +759,11 @@ int main(int argc, char **argv)
   {
     maxiters*=2;
     parallel_emcee_parallel_parallel_for_q(model_8910_012_,data_8910,betas,v<std::size_t,dimension_less>(nwalkers),initseed,maxiters,decimate_factor,arg);
+  }
+  else if (arg=="pp_model_8910_012_q2")
+  {
+    maxiters*=2;
+    parallel_emcee_parallel_parallel_for_declarativa{}(model_8910_012_,data_8910,betas,v<std::size_t,dimension_less>(nwalkers),initseed,maxiters,decimate_factor,arg);
   }
   /*  else if (arg=="pp_model_8910_0123_")
   {
@@ -576,7 +775,7 @@ int main(int argc, char **argv)
     maxiters*=4;
     parallel_emcee_parallel_parallel_for_q(model_8910_0123_,data_8910,betas,v<std::size_t,dimension_less>(nwalkers),initseed,maxiters,decimate_factor,arg);
   }
- /* else if (arg=="pp_model_8910_0_45")
+  else if (arg=="pp_model_8910_0_45")
   {
     maxiters*=4;
     parallel_emcee_parallel_parallel_for(model_8910_0_45,data_8910,betas,v<std::size_t,dimension_less>(nwalkers),initseed,maxiters,decimate_factor,arg);
