@@ -478,8 +478,8 @@ namespace mynew {
 
                 {
                   auto y0=baseline_+(drift_*t);
-                  auto y1=((std::get<I0>(A0_.value())*exp(-t/std::get<I0>(tau0_.value()))*
-                              cos(2*PI*std::get<I0>(f0_.value())*GHz_f*t*ps_f+std::get<I0>(ph0_.value())))+...);
+                  auto y1=((get<I0>(A0_)*exp(-t/get<I0>(tau0_))*
+                              cos(2*PI*get<I0>(f0_)*GHz_f*t*ps_f+get<I0>(ph0_)))+...);
 
                   return y0+y1;
 
@@ -499,7 +499,7 @@ namespace mynew {
   template <std::size_t J, std::size_t...I0, std::size_t I00, std::size_t...I1>
   auto mymodel_index(std::index_sequence<I0...>,std::index_sequence<I00,I1...>){return
         quimulun{
-            D(ind<signal,J>{},Normal_Distribution<double>{},mean<ind<signal,J>>{},stddev<ind<signal,J>>{}),
+            D(ind<signal,J>{},Normal_Distribution<double>{},Arguments<mean<ind<signal,J>>,stddev<ind<signal,J>>>{}),
             F_new(mean<ind<signal,J>>{},
                 [](auto t, auto baseline_,auto drift_,
                    auto const& A0_, auto const& A1_,auto const& f0_,auto const& f1_,  auto const& ph0_, auto const& ph1_,auto const& tau0_,
@@ -523,15 +523,15 @@ namespace mynew {
                   }
                   //return baseline_;
                 },
-                ind<delay,J>{},ind<baseline,J>{},ind<drift,J>{},
-                std::tuple<ind<Amplitude,I0,J>...>{},
-                std::tuple<ind<Amplitude,I00,J>,ind<Amplitude,I1,J>...>{},
-                std::tuple<ind<Frecuency,I0>...>{},
-                std::tuple<ind<Frecuency,I00,J>,ind<Frecuency,I1,J>...>{},
-                std::tuple<ind<phase,I0,J>...>{},
-                std::tuple<ind<phase,I00,J>,ind<phase,I1,J>...>{},
-                std::tuple<ind<tau,I0,J>...>{},
-                std::tuple<ind<tau,I00,J>,ind<tau,I1,J>...>{})
+                Arguments<ind<delay,J>,ind<baseline,J>,ind<drift,J>,
+                std::tuple<ind<Amplitude,I0,J>...>,
+                std::tuple<ind<Amplitude,I00,J>,ind<Amplitude,I1,J>...>,
+                std::tuple<ind<Frecuency,I0>...>,
+                std::tuple<ind<Frecuency,I00,J>,ind<Frecuency,I1,J>...>,
+                std::tuple<ind<phase,I0,J>...>,
+                std::tuple<ind<phase,I00,J>,ind<phase,I1,J>...>,
+                std::tuple<ind<tau,I0,J>...>,
+                          std::tuple<ind<tau,I00,J>,ind<tau,I1,J>...>>{})
         };
 
 
@@ -763,7 +763,7 @@ int main(int argc, char **argv)
   else if (arg=="pp_model_8910_012_q2")
   {
     maxiters*=2;
-    parallel_emcee_parallel_parallel_for_declarativa{}(model_8910_012_,data_8910,betas,v<std::size_t,dimension_less>(nwalkers),initseed,maxiters,decimate_factor,arg);
+    parallel_emcee_parallel_parallel_for_declarativa{}(model_8910_012_new,data_8910,betas,v<std::size_t,dimension_less>(nwalkers),initseed,maxiters,decimate_factor,arg);
   }
   /*  else if (arg=="pp_model_8910_0123_")
   {
