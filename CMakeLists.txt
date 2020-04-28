@@ -6,7 +6,7 @@ include_directories( quimulun/ )
 file(GLOB source_files "*.h" "*.cpp")
 
 project(antena LANGUAGES CXX)
-add_compile_options(-Wall -Wextra -Werror=return-type -std=c++17 -ftemplate-backtrace-limit=0 -fmax-errors=100 -fopenmp -fconstexpr-depth=10 )
+add_compile_options(-Wall -Wextra -Werror=return-type -std=c++17 -ftemplate-backtrace-limit=0 -fmax-errors=1000 -fopenmp -fconstexpr-depth=10 )
 #-fsanitize=address -fno-omit-frame-pointer)
 #-fconstexpr-steps=10485760 )
 
