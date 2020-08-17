@@ -2,12 +2,13 @@
 #include <static_string.h>
 #include <qm_unit.h>
 #include <mytypetraits.h>
-#include <qm_tensor_model_evaluation.h>
-#include <qm_tensor_model_evaluation_new.h>
+#include "qm_tensor_model_evaluation.h"
+#include "qm_tensor_model_evaluation_new.h"
 #include <fstream>
 #include <my_tests.h>
-#include <qm_Metropolis_Parallel.h>
-#include <qm_data_frame.h>
+#include "qm_Metropolis_Parallel_new.h"
+#include "qm_Metropolis_Parallel_old.h"
+#include "qm_data_frame.h"
 
 
 struct ps{constexpr static auto  className=my_static_string("ps");};
