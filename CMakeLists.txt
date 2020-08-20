@@ -1,17 +1,19 @@
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 3.8)
+set(CMAKE_CUDA_COMPILER /usr/local/cuda/bin/nvcc)
+#set(CMAKE_CXX_STANDARD 17)
+
+project(antena LANGUAGES CUDA CXX)
+
+
 include_directories( quimulun/ )
 
-#set(CMAKE_CXX_STANDARD 17)
-#set(CMAKE_CXX_STANDARD_REQUIRED ON)
-file(GLOB source_files "*.h" "*.cpp")
+set_source_files_properties(main.cpp PROPERTIES LANGUAGE CUDA)
+#set_source_files_properties(main.cpp PROPERTIES LANGUAGE CXX)
 
-project(antena LANGUAGES CXX)
-add_compile_options(-Wall -Wextra -Werror=return-type -std=c++17 -ftemplate-backtrace-limit=0 -fmax-errors=100 -fopenmp -fconstexpr-depth=30 )
-#-fsanitize=address -fno-omit-frame-pointer)
-#-fconstexpr-steps=10485760 )
+add_executable(antena main.cpp  )
 
-add_executable(antena	 ${source_files})
-find_package(OpenMP)
-if(OpenMP_CXX_FOUND)
-    target_link_libraries(antena PUBLIC OpenMP::OpenMP_CXX ) #-fsanitize=address)
-endif()
+set(CMAKE_VERBOSE_MAKEFILE ON)
+
+target_compile_options(antena PUBLIC $<$<COMPILE_LANGUAGE:CUDA>:-std=c++17 -g -ftemplate-backtrace-limit=0 -ftemplate-depth=1024 -expt-relaxed-constexpr >)
+
+set_target_properties(antena PROPERTIES LINKER_LANGUAGE CXX)
