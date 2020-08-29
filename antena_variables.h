@@ -9,6 +9,9 @@
 
 struct delay {  constexpr static auto  name=my_static_string("delay"); };
 
+
+
+
 struct signal { constexpr static auto  name=my_static_string("signal"); };
 
 template <class ei, std::size_t... I> struct i_i {
