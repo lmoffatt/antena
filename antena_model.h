@@ -11,6 +11,7 @@
 #include "qm_function_standard.h"
 #include "qm_function.h"
 #include "antena_prior_distributions.h"
+#include "qm_units_standard.h"
 
 template <std::size_t J, std::size_t...I0>
 auto mymodel_index(std::index_sequence<I0...>,std::index_sequence<>)
@@ -22,7 +23,7 @@ auto mymodel_index(std::index_sequence<I0...>,std::index_sequence<>)
               ((i_i<baseline,J>{}
              +(i_i<drift,J>{}*i_i<delay,J>{}))+...+
                 (i_i<Amplitude,I0,J>{}*Exp(-i_i<delay,J>{}/i_i<tau,I0,J>{})*
-              Cos(N<2>{}*Pi{}*i_i<Frecuency,I0>{}+i_i<phase,I0,J>{}))))
+              Cos(N<2>{}*Pi{}*i_i<Frecuency,I0>{}*GHz_F{}*i_i<delay,J>{}*ps_F{}+i_i<phase,I0,J>{}))))
       };
 
 
@@ -38,11 +39,11 @@ return quimulun{
             ((((i_i<baseline,J>{}
              +(i_i<drift,J>{}*i_i<delay,J>{}))+...
                 +(i_i<Amplitude,I0,J>{}*Exp(-i_i<delay,J>{}/i_i<tau,I0,J>{})*
-                Cos(N<2>{}*Pi{}*i_i<Frecuency,I0>{}+i_i<phase,I0,J>{})))
+                Cos(N<2>{}*Pi{}*i_i<Frecuency,I0>{}*GHz_F{}*i_i<delay,J>{}*ps_F{}+i_i<phase,I0,J>{})))
                 +(i_i<Amplitude,I00,J>{}*Exp(-i_i<delay,J>{}/i_i<tau,I00,J>{})*
-                       Cos(N<2>{}*Pi{}*i_i<Frecuency,I00>{}+i_i<phase,I00,J>{})))+...
+                       Cos(N<2>{}*Pi{}*i_i<Frecuency,I00>{}*GHz_F{}*i_i<delay,J>{}*ps_F{}+i_i<phase,I00,J>{})))+...
                 +(i_i<Amplitude,I1,J>{}*Exp(-i_i<delay,J>{}/i_i<tau,I1,J>{})*
-            Cos(N<2>{}*Pi{}*i_i<Frecuency,I1>{}+i_i<phase,I1,J>{}))))
+            Cos(N<2>{}*Pi{}*i_i<Frecuency,I1>{}*GHz_F{}*i_i<delay,J>{}*ps_F{}+i_i<phase,I1,J>{}))))
 };
 
 

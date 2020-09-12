@@ -38,9 +38,9 @@ using T=vs<
       x_i<i_i<signal,J>,v<double,V_u>>
       >;
 
-using F=v_f<index_prod<i_i<delay,J>>,T>;
+using F=v_f<index_prod<Index<i_i<delay,J>>>,T>;
 
-using I=index_table<index_vector<ind<i_i<delay,J>,ind_size>>>;
+using I=index_table<index_vector<ind<Index<i_i<delay,J>>,ind_size>>>;
 
 
 
